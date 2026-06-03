@@ -80,7 +80,7 @@ button {
 }
 
 .nav-links a {
-  min-width: 88px;
+  min-width: 92px;
   padding: 10px 14px;
   border-radius: 6px;
   color: #4d5966;
@@ -205,6 +205,38 @@ h1 {
   padding: 40px clamp(18px, 5vw, 72px) 72px;
 }
 
+.signal-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  padding-top: 0;
+  padding-bottom: 22px;
+}
+
+.signal-tile {
+  min-height: 108px;
+  padding: 20px;
+  border: 1px solid rgba(23, 33, 43, 0.08);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.signal-tile span {
+  display: block;
+  margin-bottom: 8px;
+  color: #6a7480;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.signal-tile strong {
+  color: #14213d;
+  font-size: 1rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
 .purpose-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -213,7 +245,10 @@ h1 {
 
 .mission-panel,
 .step-card,
-.roadmap-item {
+.roadmap-item,
+.start-row,
+.lesson-panel,
+.repo-panel {
   border: 1px solid rgba(23, 33, 43, 0.08);
   border-radius: 8px;
   background: #ffffff;
@@ -245,11 +280,123 @@ h1 {
 .mission-panel p,
 .step-card p,
 .architecture-row p,
-.roadmap-item p {
+.roadmap-item p,
+.start-row p,
+.lesson-panel p,
+.repo-panel p {
   margin: 0;
   color: #4d5966;
   font-size: 1rem;
   line-height: 1.68;
+}
+
+.start-list {
+  display: grid;
+  gap: 14px;
+}
+
+.start-row {
+  display: grid;
+  grid-template-columns: 44px 38px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  padding: 24px;
+}
+
+.start-row svg,
+.lesson-panel strong,
+.repo-panel svg {
+  color: #0f766e;
+}
+
+.row-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: #14213d;
+  font-weight: 900;
+}
+
+.start-row h2,
+.lesson-panel h2,
+.repo-panel h2,
+.command-band h2,
+.team-column h2 {
+  margin: 0 0 10px;
+  color: #14213d;
+  font-size: clamp(1.2rem, 2.4vw, 1.75rem);
+  line-height: 1.18;
+}
+
+pre {
+  overflow-x: auto;
+  margin: 16px 0 0;
+  padding: 16px;
+  border-radius: 8px;
+  color: #eaf2ef;
+  background: #17212b;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.lab-grid,
+.repo-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lesson-panel,
+.repo-panel {
+  min-height: 230px;
+  padding: 26px;
+}
+
+.lesson-panel strong {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 0.95rem;
+}
+
+.command-band {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.82fr) minmax(0, 1.18fr);
+  gap: 22px;
+  align-items: center;
+  padding-top: 0;
+}
+
+.command-band > div,
+.command-band pre {
+  margin: 0;
+}
+
+.repo-panel code {
+  display: block;
+  margin: 16px 0 14px;
+  color: #b2472e;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.team-layout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.team-column {
+  display: grid;
+  align-content: start;
+  gap: 14px;
 }
 
 .page-heading {
@@ -342,6 +489,14 @@ h1 {
   .step-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .signal-grid,
+  .lab-grid,
+  .repo-grid,
+  .team-layout,
+  .command-band {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 720px) {
@@ -400,8 +555,22 @@ h1 {
 
   .purpose-grid,
   .step-list,
-  .roadmap-list {
+  .roadmap-list,
+  .signal-grid,
+  .lab-grid,
+  .repo-grid,
+  .team-layout {
     grid-template-columns: 1fr;
+  }
+
+  .start-row {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .start-row svg {
+    display: none;
   }
 
   .step-card {
