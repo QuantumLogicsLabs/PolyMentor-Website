@@ -5,10 +5,10 @@ React website for the Groq-powered PolyMentor coding tutor chatbot.
 ## Routes
 
 - `/` explains the chatbot purpose.
-- `/how-it-works` explains the Groq architecture.
-- `/groq` shows setup steps.
+- `/work-guide` gives the complete local workflow.
+- `/fine-tune` explains the RTX/LoRA training path.
+- `/deploy` explains Hugging Face Hub and Space deployment.
 - `/languages` describes multi-language coding help.
-- `/roadmap` lists next product work.
 
 ## Commands
 

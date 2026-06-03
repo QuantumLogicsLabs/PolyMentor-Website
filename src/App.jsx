@@ -4,70 +4,159 @@ import {
   Bot,
   BrainCircuit,
   CheckCircle2,
+  Cloud,
   Code2,
   Cpu,
   FileCode2,
+  GitBranch,
   GraduationCap,
   KeyRound,
   Languages,
   Menu,
   MessageSquareCode,
   Rocket,
+  Server,
   Sparkles,
   TerminalSquare,
+  UploadCloud,
   Wrench,
 } from "lucide-react";
 import heroImage from "./assets/polymentor-hero.png";
 
 const navItems = [
-  { to: "/", label: "Chatbot" },
-  { to: "/how-it-works", label: "How It Works" },
-  { to: "/groq", label: "Groq Setup" },
+  { to: "/", label: "Overview" },
+  { to: "/work-guide", label: "Work Guide" },
+  { to: "/fine-tune", label: "Fine-Tune" },
+  { to: "/deploy", label: "Deploy" },
   { to: "/languages", label: "Languages" },
-  { to: "/roadmap", label: "Roadmap" },
+];
+
+const stats = [
+  { label: "Runtime", value: "Groq API" },
+  { label: "Local option", value: "LoRA adapter" },
+  { label: "Website", value: "React + Vite" },
+  { label: "Deploy", value: "HF Hub + Spaces" },
 ];
 
 const missionCards = [
   {
     icon: GraduationCap,
     title: "Teach code clearly",
-    text: "PolyMentor explains programming concepts at the learner's level, from basic loops to larger architecture decisions.",
+    text: "PolyMentor explains concepts at the learner's level, from first loops to debugging larger programs.",
   },
   {
     icon: Wrench,
     title: "Find likely bugs",
-    text: "Paste code and ask for help. PolyMentor looks for syntax mistakes, logic problems, missing edge cases, and confusing patterns.",
+    text: "Users paste code and get likely bugs, why they happen, corrected examples, and next practice steps.",
   },
   {
     icon: FileCode2,
-    title: "Write usable code",
-    text: "Ask for examples, full functions, refactors, tests, or the same idea translated across multiple programming languages.",
+    title: "Build across languages",
+    text: "The assistant can write examples, translate ideas, refactor snippets, and generate tests in many languages.",
   },
 ];
 
-const flow = [
+const workGuide = [
+  {
+    icon: KeyRound,
+    title: "1. Prepare the environment",
+    text: "Use the project venv for Groq chatbot work. Use Python 3.12 plus CUDA PyTorch only for local GPU fine-tuning.",
+    command:
+      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\nexport GROQ_API_KEY=\"your_key\"",
+  },
+  {
+    icon: MessageSquareCode,
+    title: "2. Run PolyMentor locally",
+    text: "Start the terminal tutor for quick testing, or run the FastAPI server for app and Space integration.",
+    command: "bash scripts/run_tutor.sh\nuvicorn src.api.app:app --reload",
+  },
+  {
+    icon: BrainCircuit,
+    title: "3. Improve the tutor behavior",
+    text: "Add better prompt instructions, more high-quality examples under data, and focused bug explanation patterns.",
+    command: "src/inference/pipeline.py\ndata/raw/pro_training_data.json\ndata/processed/train.json",
+  },
+  {
+    icon: CheckCircle2,
+    title: "4. Validate before sharing",
+    text: "Test beginner lessons, bug-fix tasks, multi-language code generation, and ambiguous requests that should trigger questions.",
+    command:
+      "python -m py_compile src/inference/pipeline.py src/api/app.py\nnpm --prefix website run build",
+  },
+];
+
+const runtimeFlow = [
   "User asks a coding question or pastes code.",
   "PolyMentor adds language, level, and tutor instructions.",
-  "Groq generates a fast coding mentor response.",
-  "The app returns likely bugs, explanation, fixed code, lesson, and next steps.",
+  "Groq returns a fast mentor response for the default runtime.",
+  "Optional local LoRA adapter can be trained and pushed to Hugging Face Hub.",
+  "A Hugging Face Space can expose the chatbot through Gradio or Docker.",
 ];
 
-const groqSteps = [
+const fineTuneSteps = [
   {
-    title: "Install dependencies",
-    command: "pip install -e .\npip install -r requirements-groq.txt",
+    title: "Create a CUDA training venv",
+    command:
+      "deactivate\npy -3.12 -m venv venv312\n.\\venv312\\Scripts\\Activate.ps1\npython -m pip install --upgrade pip",
   },
   {
-    title: "Set your API key",
-    command: "export GROQ_API_KEY=\"your_groq_api_key\"",
+    title: "Install project and CUDA PyTorch",
+    command:
+      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\npython -m pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision torchaudio",
   },
   {
-    title: "Run the tutor",
-    command: "bash scripts/run_tutor.sh",
+    title: "Run local LoRA fine-tuning",
+    command:
+      "bash scripts/train.sh\n# checkpoint: models_saved/polymentor-chatbot-lora",
   },
   {
-    title: "Run the API",
-    command: "uvicorn src.api.app:app --reload",
+    title: "Tune safely",
+    command:
+      "BASE_MODEL=Qwen/Qwen2.5-Coder-0.5B-Instruct EPOCHS=3 MAX_VENDOR_FILES=200 bash scripts/train.sh",
+  },
+];
+
+const hubSteps = [
+  {
+    title: "Login",
+    command: "python -m pip install -U huggingface_hub\nhf auth login",
+  },
+  {
+    title: "Create or choose a model repo",
+    command: "hf repo create polymentor-chatbot-lora --type model",
+  },
+  {
+    title: "Upload checkpoint folder",
+    command:
+      "hf upload your-username/polymentor-chatbot-lora models_saved/polymentor-chatbot-lora . --repo-type model",
+  },
+  {
+    title: "Add a model card",
+    command:
+      "Create README.md in the model repo with base model, data notes, intended use, and limitations.",
+  },
+];
+
+const spaceSteps = [
+  {
+    title: "Create a Space",
+    command:
+      "On Hugging Face: New Space -> Gradio or Docker -> name it polymentor-space",
+  },
+  {
+    title: "Add secrets",
+    command:
+      "Space Settings -> Secrets\nGROQ_API_KEY=your_key\nGROQ_MODEL=llama-3.3-70b-versatile",
+  },
+  {
+    title: "Minimal Gradio app",
+    command:
+      "app.py imports PolyMentorPipeline, creates a textbox for question/code, and calls pipeline.chat().",
+  },
+  {
+    title: "Push files",
+    command:
+      "git clone https://huggingface.co/spaces/your-username/polymentor-space\n# add app.py, requirements.txt, src/\ngit add . && git commit -m \"Deploy PolyMentor\" && git push",
   },
 ];
 
@@ -88,14 +177,6 @@ const languages = [
   "SQL",
   "HTML",
   "CSS",
-];
-
-const roadmap = [
-  "Add a browser chat UI connected to the FastAPI `/chat` endpoint.",
-  "Add saved lessons so users can turn debugging sessions into study notes.",
-  "Use local language detectors as extra context before sending prompts to Groq.",
-  "Add runnable examples and test-generation workflows for each supported language.",
-  "Create friend/classroom mode where one user can generate practice tasks for others.",
 ];
 
 function Layout({ children }) {
@@ -155,22 +236,21 @@ function Hero() {
       <div className="hero-copy">
         <p className="eyebrow">
           <Sparkles size={16} aria-hidden="true" />
-          Groq coding tutor chatbot
+          Groq chatbot plus local fine-tuning path
         </p>
         <h1>PolyMentor</h1>
         <p className="hero-text">
-          PolyMentor teaches code, writes examples, helps identify bugs, and
-          explains fixes across multiple languages using Groq for fast mentor
-          responses.
+          A coding tutor chatbot that teaches programming, helps identify bugs,
+          writes code across languages, and can be deployed on Hugging Face.
         </p>
         <div className="hero-actions">
-          <NavLink to="/groq" className="primary-action">
-            <KeyRound size={18} aria-hidden="true" />
-            Set up Groq
+          <NavLink to="/work-guide" className="primary-action">
+            <GraduationCap size={18} aria-hidden="true" />
+            Complete guide
           </NavLink>
-          <NavLink to="/how-it-works" className="secondary-action">
-            <BrainCircuit size={18} aria-hidden="true" />
-            How it works
+          <NavLink to="/deploy" className="secondary-action">
+            <Cloud size={18} aria-hidden="true" />
+            Deploy on HF
           </NavLink>
         </div>
       </div>
@@ -181,10 +261,18 @@ function Hero() {
   );
 }
 
-function ChatbotPage() {
+function OverviewPage() {
   return (
     <Layout>
       <Hero />
+      <section className="section signal-grid">
+        {stats.map((stat) => (
+          <article className="signal-tile metric-tile" key={stat.label}>
+            <span>{stat.label}</span>
+            <strong>{stat.value}</strong>
+          </article>
+        ))}
+      </section>
       <section className="section purpose-grid">
         {missionCards.map((card) => {
           const Icon = card.icon;
@@ -197,64 +285,131 @@ function ChatbotPage() {
           );
         })}
       </section>
+      <section className="section command-band">
+        <div>
+          <p className="eyebrow">
+            <Cpu size={16} aria-hidden="true" />
+            Architecture
+          </p>
+          <h2>Groq for production. LoRA for experiments.</h2>
+        </div>
+        <pre>{`Default runtime: Groq Chat Completions
+Optional local checkpoint: models_saved/polymentor-chatbot-lora
+Website: React/Vite
+API: FastAPI /chat /review /teach`}</pre>
+      </section>
     </Layout>
   );
 }
 
-function HowItWorksPage() {
+function WorkGuidePage() {
   return (
     <Layout>
       <section className="page-heading compact">
         <p className="eyebrow">
-          <Cpu size={16} aria-hidden="true" />
-          Runtime architecture
+          <GitBranch size={16} aria-hidden="true" />
+          Complete workflow
         </p>
-        <h1>No local training loop. Groq is the chatbot model.</h1>
+        <h1>Build, test, improve, and share PolyMentor step by step.</h1>
+      </section>
+      <section className="section start-list">
+        {workGuide.map((step) => {
+          const Icon = step.icon;
+          return (
+            <article className="start-row" key={step.title}>
+              <Icon size={26} aria-hidden="true" />
+              <div>
+                <h2>{step.title}</h2>
+                <p>{step.text}</p>
+                <pre>{step.command}</pre>
+              </div>
+            </article>
+          );
+        })}
       </section>
       <section className="section architecture-band">
-        {flow.map((item, index) => (
+        {runtimeFlow.map((item, index) => (
           <article className="architecture-row" key={item}>
             <span>{index + 1}</span>
             <p>{item}</p>
           </article>
         ))}
       </section>
-      <section className="section command-band">
-        <div>
-          <p className="eyebrow">
-            <MessageSquareCode size={16} aria-hidden="true" />
-            Response style
-          </p>
-          <h2>Helpful answers, not numeric scores.</h2>
-        </div>
-        <pre>{`Likely bugs
-Explanation
-Fixed code
-Lesson
-Next steps`}</pre>
-      </section>
     </Layout>
   );
 }
 
-function GroqPage() {
+function FineTunePage() {
   return (
     <Layout>
       <section className="page-heading">
         <p className="eyebrow">
-          <KeyRound size={16} aria-hidden="true" />
-          Groq setup
+          <BrainCircuit size={16} aria-hidden="true" />
+          Local RTX fine-tuning
         </p>
-        <h1>Set one API key, then start the tutor or API.</h1>
+        <h1>Train a small local adapter, then save it in models_saved.</h1>
       </section>
       <section className="section lab-grid">
-        {groqSteps.map((step, index) => (
-          <article className="lesson-panel" key={step.title}>
+        {fineTuneSteps.map((step, index) => (
+          <article className="lesson-panel guide-panel" key={step.title}>
             <span className="row-index">{index + 1}</span>
             <h2>{step.title}</h2>
             <pre>{step.command}</pre>
           </article>
         ))}
+      </section>
+      <section className="section note-band">
+        <CheckCircle2 size={24} aria-hidden="true" />
+        <p>
+          Use Python 3.12 for CUDA PyTorch on Windows. Your Python 3.14 venv is
+          fine for Groq/API work, but not for RTX CUDA wheels.
+        </p>
+      </section>
+    </Layout>
+  );
+}
+
+function DeployPage() {
+  return (
+    <Layout>
+      <section className="page-heading compact">
+        <p className="eyebrow">
+          <UploadCloud size={16} aria-hidden="true" />
+          Hugging Face deployment
+        </p>
+        <h1>Publish the adapter on Hub and serve the chatbot from a Space.</h1>
+      </section>
+      <section className="section deploy-layout">
+        <div>
+          <div className="section-label">
+            <Server size={18} aria-hidden="true" />
+            <h2>HF Hub model repo</h2>
+          </div>
+          <div className="deploy-stack">
+            {hubSteps.map((step, index) => (
+              <article className="lesson-panel compact-panel" key={step.title}>
+                <span className="row-index">{index + 1}</span>
+                <h3>{step.title}</h3>
+                <pre>{step.command}</pre>
+              </article>
+            ))}
+          </div>
+        </div>
+        <div>
+          <div className="section-label">
+            <Cloud size={18} aria-hidden="true" />
+            <h2>HF Space app</h2>
+          </div>
+          <div className="deploy-stack">
+            {spaceSteps.map((step, index) => (
+              <article className="lesson-panel compact-panel" key={step.title}>
+                <span className="row-index">{index + 1}</span>
+                <h3>{step.title}</h3>
+                <pre>{step.command}</pre>
+              </article>
+            ))}
+          </div>
+        </div>
       </section>
     </Layout>
   );
@@ -270,32 +425,23 @@ function LanguagesPage() {
         </p>
         <h1>Ask for lessons, bug fixes, refactors, tests, or translations.</h1>
       </section>
-      <section className="section signal-grid">
+      <section className="section language-grid">
         {languages.map((language) => (
-          <article className="signal-tile" key={language}>
+          <article className="signal-tile language-tile" key={language}>
             <TerminalSquare size={22} aria-hidden="true" />
             <strong>{language}</strong>
           </article>
         ))}
       </section>
-    </Layout>
-  );
-}
-
-function RoadmapPage() {
-  return (
-    <Layout>
-      <section className="page-heading compact">
-        <p className="eyebrow">
-          <Rocket size={16} aria-hidden="true" />
-          Next product work
-        </p>
-        <h1>Make PolyMentor a full coding classroom chatbot.</h1>
-      </section>
       <section className="section roadmap-list">
-        {roadmap.map((item) => (
+        {[
+          "Use Groq for fast coding answers.",
+          "Use local LoRA checkpoints for experiments and demonstrations.",
+          "Use Hugging Face Spaces to share the tutor with friends or a class.",
+          "Keep outputs educational: bugs, explanation, fixed code, lesson, next steps.",
+        ].map((item) => (
           <article className="roadmap-item" key={item}>
-            <CheckCircle2 size={22} aria-hidden="true" />
+            <Code2 size={22} aria-hidden="true" />
             <p>{item}</p>
           </article>
         ))}
@@ -307,11 +453,11 @@ function RoadmapPage() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<ChatbotPage />} />
-      <Route path="/how-it-works" element={<HowItWorksPage />} />
-      <Route path="/groq" element={<GroqPage />} />
+      <Route path="/" element={<OverviewPage />} />
+      <Route path="/work-guide" element={<WorkGuidePage />} />
+      <Route path="/fine-tune" element={<FineTunePage />} />
+      <Route path="/deploy" element={<DeployPage />} />
       <Route path="/languages" element={<LanguagesPage />} />
-      <Route path="/roadmap" element={<RoadmapPage />} />
     </Routes>
   );
 }
