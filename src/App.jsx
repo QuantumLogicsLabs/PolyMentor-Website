@@ -1,143 +1,105 @@
 import { useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import {
-  AlertTriangle,
   Bot,
   BrainCircuit,
   CheckCircle2,
-  ClipboardList,
   Code2,
-  Database,
-  FileJson,
-  GitBranch,
+  Cpu,
+  FileCode2,
   GraduationCap,
-  Layers3,
+  KeyRound,
+  Languages,
   Menu,
-  PlayCircle,
-  Route as RouteIcon,
-  ShieldCheck,
+  MessageSquareCode,
+  Rocket,
   Sparkles,
-  SquareTerminal,
-  TestTube2,
-  Users,
+  TerminalSquare,
+  Wrench,
 } from "lucide-react";
 import heroImage from "./assets/polymentor-hero.png";
 
 const navItems = [
-  { to: "/", label: "Mission" },
-  { to: "/start", label: "Start" },
-  { to: "/training", label: "Training Lab" },
-  { to: "/repo-map", label: "Repo Map" },
-  { to: "/team", label: "Team Plan" },
+  { to: "/", label: "Chatbot" },
+  { to: "/how-it-works", label: "How It Works" },
+  { to: "/groq", label: "Groq Setup" },
+  { to: "/languages", label: "Languages" },
+  { to: "/roadmap", label: "Roadmap" },
 ];
 
-const repoSignals = [
-  { label: "Backbone", value: "microsoft/codebert-base" },
-  { label: "Explainer", value: "Salesforce/codet5-base" },
-  { label: "Training entry", value: "src/training/train.py" },
-  { label: "Dataset split", value: "data/processed/train.json" },
-];
-
-const startSteps = [
-  {
-    icon: ShieldCheck,
-    title: "Make the repo trainable first",
-    text: "Install dependencies, run tests, and make sure scripts match the Python entrypoints. Treat this as your first ML engineering job: a reproducible project beats a clever model.",
-    command: "pip install -r requirements.txt\npip install -e .\npytest tests/ -v",
-  },
-  {
-    icon: FileJson,
-    title: "Fix labels before training",
-    text: "The current label file has four specific labels, while the model config says nine labels. Align the taxonomy and model output size before you trust any metrics.",
-    command: "data/labels/error_types.json\nconfigs/model_config.yaml",
-  },
-  {
-    icon: Database,
-    title: "Build a tiny gold dataset",
-    text: "Start with 80 to 200 examples that you and your friends can audit by hand. Each example should include code, language, error labels, difficulty, expected fix, explanation, and hints.",
-    command: "python src/data_pipeline/dataset_builder.py",
-  },
-  {
-    icon: PlayCircle,
-    title: "Run a small baseline experiment",
-    text: "Do not begin with a huge model run. Train on a small split, inspect wrong predictions, then improve data labels and preprocessing before scaling.",
-    command: "python src/training/train.py\npython src/evaluation/evaluate.py",
-  },
-];
-
-const trainingLab = [
-  {
-    title: "Lesson 1: What the model learns",
-    body: "PolyMentor is a multi-label coding error detector. One snippet can contain more than one issue, so each label gets its own confidence score instead of a single class choice.",
-    artifact: "Read: src/models/error_detector.py",
-  },
-  {
-    title: "Lesson 2: What data must contain",
-    body: "Training examples need more than code. Good examples include error category, specific type, language, difficulty, explanation, corrected code, and progressive hints.",
-    artifact: "Create: 20 reviewed examples per person",
-  },
-  {
-    title: "Lesson 3: How fine-tuning works",
-    body: "CodeBERT already knows code patterns. Your job is to fine-tune it on PolyMentor labels so it learns beginner mistakes, not just generic code syntax.",
-    artifact: "Tune: batch size, learning rate, labels",
-  },
-  {
-    title: "Lesson 4: How to judge success",
-    body: "Accuracy alone is weak for multi-label learning. Track micro F1, per-label recall, confusion patterns, explanation helpfulness, and whether hints teach the concept.",
-    artifact: "Report: experiments/results",
-  },
-];
-
-const repoMap = [
-  {
-    icon: Database,
-    title: "Data pipeline",
-    paths: "src/data_pipeline, data/labels, data/raw_samples",
-    text: "Collects raw code, cleans samples, tokenizes snippets, and builds train, validation, and test files.",
-  },
-  {
-    icon: BrainCircuit,
-    title: "Model layer",
-    paths: "src/models, configs/model_config.yaml",
-    text: "Defines CodeBERT error detection, label registry, explanation model loading, and model routing.",
-  },
+const missionCards = [
   {
     icon: GraduationCap,
-    title: "Training layer",
-    paths: "src/training, configs/training_config.yaml, scripts/train.sh",
-    text: "Loads processed data, tokenizes code, optimizes model weights, validates with F1, and saves the best checkpoint.",
+    title: "Teach code clearly",
+    text: "PolyMentor explains programming concepts at the learner's level, from basic loops to larger architecture decisions.",
   },
   {
-    icon: TestTube2,
-    title: "Evaluation layer",
-    paths: "src/evaluation, tests, quality",
-    text: "Measures classifier behavior, checks inference safety, tests language detectors, and exposes mistakes to improve the next dataset version.",
+    icon: Wrench,
+    title: "Find likely bugs",
+    text: "Paste code and ask for help. PolyMentor looks for syntax mistakes, logic problems, missing edge cases, and confusing patterns.",
   },
   {
-    icon: SquareTerminal,
-    title: "Inference and tutor mode",
-    paths: "src/inference, src/reasoning_engine, src/api",
-    text: "Turns predictions into a learning experience: explanations, hints, feedback scoring, and API responses.",
+    icon: FileCode2,
+    title: "Write usable code",
+    text: "Ask for examples, full functions, refactors, tests, or the same idea translated across multiple programming languages.",
   },
 ];
 
-const teamPlan = [
-  "Data lead: owns label schema, examples, train/val/test split, and sample quality review.",
-  "Model lead: owns CodeBERT setup, config alignment, training runs, checkpoints, and experiment notes.",
-  "Evaluation lead: owns metrics, failing examples, per-label analysis, and test coverage.",
-  "Teaching lead: owns website lessons, beginner explanations, hints, and friend study sessions.",
+const flow = [
+  "User asks a coding question or pastes code.",
+  "PolyMentor adds language, level, and tutor instructions.",
+  "Groq generates a fast coding mentor response.",
+  "The app returns likely bugs, explanation, fixed code, lesson, and next steps.",
 ];
 
-const firstMonth = [
-  "Week 1: run the repo, read the beginner ML guide, fix label/config mismatch, create 40 clean examples.",
-  "Week 2: build processed splits, train a tiny classifier, log every failure, improve the taxonomy.",
-  "Week 3: add explanation and hint fields to the dataset, test tutor responses manually, collect friend feedback.",
-  "Week 4: run a repeatable experiment, publish results on the website, choose the next model improvement.",
+const groqSteps = [
+  {
+    title: "Install dependencies",
+    command: "pip install -e .\npip install -r requirements-groq.txt",
+  },
+  {
+    title: "Set your API key",
+    command: "export GROQ_API_KEY=\"your_groq_api_key\"",
+  },
+  {
+    title: "Run the tutor",
+    command: "bash scripts/run_tutor.sh",
+  },
+  {
+    title: "Run the API",
+    command: "uvicorn src.api.app:app --reload",
+  },
+];
+
+const languages = [
+  "Python",
+  "JavaScript",
+  "TypeScript",
+  "Java",
+  "C++",
+  "C",
+  "C#",
+  "Go",
+  "Rust",
+  "PHP",
+  "Ruby",
+  "Swift",
+  "Kotlin",
+  "SQL",
+  "HTML",
+  "CSS",
+];
+
+const roadmap = [
+  "Add a browser chat UI connected to the FastAPI `/chat` endpoint.",
+  "Add saved lessons so users can turn debugging sessions into study notes.",
+  "Use local language detectors as extra context before sending prompts to Groq.",
+  "Add runnable examples and test-generation workflows for each supported language.",
+  "Create friend/classroom mode where one user can generate practice tasks for others.",
 ];
 
 function Layout({ children }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
@@ -193,90 +155,44 @@ function Hero() {
       <div className="hero-copy">
         <p className="eyebrow">
           <Sparkles size={16} aria-hidden="true" />
-          ML engineering classroom
+          Groq coding tutor chatbot
         </p>
         <h1>PolyMentor</h1>
         <p className="hero-text">
-          Use this website to teach yourself and your friends how to train a
-          coding mentor model: build data, fine-tune CodeBERT, evaluate errors,
-          and turn model output into useful guidance.
+          PolyMentor teaches code, writes examples, helps identify bugs, and
+          explains fixes across multiple languages using Groq for fast mentor
+          responses.
         </p>
         <div className="hero-actions">
-          <NavLink to="/start" className="primary-action">
-            <GraduationCap size={18} aria-hidden="true" />
-            Start learning
+          <NavLink to="/groq" className="primary-action">
+            <KeyRound size={18} aria-hidden="true" />
+            Set up Groq
           </NavLink>
-          <NavLink to="/repo-map" className="secondary-action">
-            <RouteIcon size={18} aria-hidden="true" />
-            View repo map
+          <NavLink to="/how-it-works" className="secondary-action">
+            <BrainCircuit size={18} aria-hidden="true" />
+            How it works
           </NavLink>
         </div>
       </div>
-      <div className="hero-media" aria-label="PolyMentor coding model illustration">
+      <div className="hero-media" aria-label="PolyMentor coding tutor illustration">
         <img src={heroImage} alt="" />
       </div>
     </section>
   );
 }
 
-function MissionPage() {
+function ChatbotPage() {
   return (
     <Layout>
       <Hero />
-      <section className="section signal-grid">
-        {repoSignals.map((signal) => (
-          <article className="signal-tile" key={signal.label}>
-            <span>{signal.label}</span>
-            <strong>{signal.value}</strong>
-          </article>
-        ))}
-      </section>
       <section className="section purpose-grid">
-        <article className="mission-panel">
-          <Code2 size={26} aria-hidden="true" />
-          <h2>Your ML engineer mission</h2>
-          <p>
-            Build a model that detects coding mistakes, explains the concept
-            behind them, and guides a learner toward the fix without removing
-            the learning moment.
-          </p>
-        </article>
-        <article className="mission-panel accent">
-          <AlertTriangle size={26} aria-hidden="true" />
-          <h2>First project truth</h2>
-          <p>
-            The codebase has strong structure, but it needs alignment before
-            serious training: label taxonomy, configs, scripts, data format, and
-            evaluation must agree.
-          </p>
-        </article>
-      </section>
-    </Layout>
-  );
-}
-
-function StartPage() {
-  return (
-    <Layout>
-      <section className="page-heading">
-        <p className="eyebrow">
-          <ClipboardList size={16} aria-hidden="true" />
-          Start as an ML engineer
-        </p>
-        <h1>Begin with reproducibility, data quality, and tiny experiments.</h1>
-      </section>
-      <section className="section start-list">
-        {startSteps.map((step, index) => {
-          const Icon = step.icon;
+        {missionCards.map((card) => {
+          const Icon = card.icon;
           return (
-            <article className="start-row" key={step.title}>
-              <span className="row-index">{index + 1}</span>
+            <article className="mission-panel" key={card.title}>
               <Icon size={26} aria-hidden="true" />
-              <div>
-                <h2>{step.title}</h2>
-                <p>{step.text}</p>
-                <pre>{step.command}</pre>
-              </div>
+              <h2>{card.title}</h2>
+              <p>{card.text}</p>
             </article>
           );
         })}
@@ -285,100 +201,104 @@ function StartPage() {
   );
 }
 
-function TrainingPage() {
+function HowItWorksPage() {
   return (
     <Layout>
-      <section className="page-heading">
+      <section className="page-heading compact">
         <p className="eyebrow">
-          <GraduationCap size={16} aria-hidden="true" />
-          Training lab
+          <Cpu size={16} aria-hidden="true" />
+          Runtime architecture
         </p>
-        <h1>Teach the model by teaching the team first.</h1>
+        <h1>No local training loop. Groq is the chatbot model.</h1>
       </section>
-      <section className="section lab-grid">
-        {trainingLab.map((lesson) => (
-          <article className="lesson-panel" key={lesson.title}>
-            <h2>{lesson.title}</h2>
-            <p>{lesson.body}</p>
-            <strong>{lesson.artifact}</strong>
+      <section className="section architecture-band">
+        {flow.map((item, index) => (
+          <article className="architecture-row" key={item}>
+            <span>{index + 1}</span>
+            <p>{item}</p>
           </article>
         ))}
       </section>
       <section className="section command-band">
         <div>
           <p className="eyebrow">
-            <GitBranch size={16} aria-hidden="true" />
-            Recommended training loop
+            <MessageSquareCode size={16} aria-hidden="true" />
+            Response style
           </p>
-          <h2>Data, train, evaluate, inspect, repeat.</h2>
+          <h2>Helpful answers, not numeric scores.</h2>
         </div>
-        <pre>
-{`bash scripts/preprocess.sh
-bash scripts/train.sh --exp first_clean_run
-bash scripts/evaluate.sh --split test
-pytest tests/ -v`}
-        </pre>
+        <pre>{`Likely bugs
+Explanation
+Fixed code
+Lesson
+Next steps`}</pre>
       </section>
     </Layout>
   );
 }
 
-function RepoMapPage() {
+function GroqPage() {
   return (
     <Layout>
-      <section className="page-heading compact">
+      <section className="page-heading">
         <p className="eyebrow">
-          <Layers3 size={16} aria-hidden="true" />
-          Parent repository map
+          <KeyRound size={16} aria-hidden="true" />
+          Groq setup
         </p>
-        <h1>Each folder teaches one ML engineering responsibility.</h1>
+        <h1>Set one API key, then start the tutor or API.</h1>
       </section>
-      <section className="section repo-grid">
-        {repoMap.map((item) => {
-          const Icon = item.icon;
-          return (
-            <article className="repo-panel" key={item.title}>
-              <Icon size={28} aria-hidden="true" />
-              <h2>{item.title}</h2>
-              <code>{item.paths}</code>
-              <p>{item.text}</p>
-            </article>
-          );
-        })}
+      <section className="section lab-grid">
+        {groqSteps.map((step, index) => (
+          <article className="lesson-panel" key={step.title}>
+            <span className="row-index">{index + 1}</span>
+            <h2>{step.title}</h2>
+            <pre>{step.command}</pre>
+          </article>
+        ))}
       </section>
     </Layout>
   );
 }
 
-function TeamPage() {
+function LanguagesPage() {
   return (
     <Layout>
       <section className="page-heading compact">
         <p className="eyebrow">
-          <Users size={16} aria-hidden="true" />
-          Teach friends with the website
+          <Languages size={16} aria-hidden="true" />
+          Multi-language coding help
         </p>
-        <h1>Run PolyMentor like a small ML engineering studio.</h1>
+        <h1>Ask for lessons, bug fixes, refactors, tests, or translations.</h1>
       </section>
-      <section className="section team-layout">
-        <div className="team-column">
-          <h2>Roles</h2>
-          {teamPlan.map((item) => (
-            <article className="roadmap-item" key={item}>
-              <CheckCircle2 size={22} aria-hidden="true" />
-              <p>{item}</p>
-            </article>
-          ))}
-        </div>
-        <div className="team-column">
-          <h2>First month</h2>
-          {firstMonth.map((item) => (
-            <article className="roadmap-item" key={item}>
-              <CheckCircle2 size={22} aria-hidden="true" />
-              <p>{item}</p>
-            </article>
-          ))}
-        </div>
+      <section className="section signal-grid">
+        {languages.map((language) => (
+          <article className="signal-tile" key={language}>
+            <TerminalSquare size={22} aria-hidden="true" />
+            <strong>{language}</strong>
+          </article>
+        ))}
+      </section>
+    </Layout>
+  );
+}
+
+function RoadmapPage() {
+  return (
+    <Layout>
+      <section className="page-heading compact">
+        <p className="eyebrow">
+          <Rocket size={16} aria-hidden="true" />
+          Next product work
+        </p>
+        <h1>Make PolyMentor a full coding classroom chatbot.</h1>
+      </section>
+      <section className="section roadmap-list">
+        {roadmap.map((item) => (
+          <article className="roadmap-item" key={item}>
+            <CheckCircle2 size={22} aria-hidden="true" />
+            <p>{item}</p>
+          </article>
+        ))}
       </section>
     </Layout>
   );
@@ -387,11 +307,11 @@ function TeamPage() {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<MissionPage />} />
-      <Route path="/start" element={<StartPage />} />
-      <Route path="/training" element={<TrainingPage />} />
-      <Route path="/repo-map" element={<RepoMapPage />} />
-      <Route path="/team" element={<TeamPage />} />
+      <Route path="/" element={<ChatbotPage />} />
+      <Route path="/how-it-works" element={<HowItWorksPage />} />
+      <Route path="/groq" element={<GroqPage />} />
+      <Route path="/languages" element={<LanguagesPage />} />
+      <Route path="/roadmap" element={<RoadmapPage />} />
     </Routes>
   );
 }

@@ -1,13 +1,14 @@
 # PolyMentor Website
 
-React website for explaining the PolyMentor model purpose, browser routes, training workflow, architecture, and roadmap.
+React website for the Groq-powered PolyMentor coding tutor chatbot.
 
 ## Routes
 
-- `/` explains the purpose of the coding chatbot.
-- `/training` explains how to train the model.
-- `/architecture` explains the system layers.
-- `/roadmap` lists next website and model dashboard targets.
+- `/` explains the chatbot purpose.
+- `/how-it-works` explains the Groq architecture.
+- `/groq` shows setup steps.
+- `/languages` describes multi-language coding help.
+- `/roadmap` lists next product work.
 
 ## Commands
 
