@@ -7,6 +7,7 @@ import {
   Cloud,
   Code2,
   Cpu,
+  Database,
   FileCode2,
   GitBranch,
   GraduationCap,
@@ -14,149 +15,185 @@ import {
   Languages,
   Menu,
   MessageSquareCode,
+  RefreshCw,
   Rocket,
   Server,
   Sparkles,
   TerminalSquare,
+  TrendingUp,
   UploadCloud,
   Wrench,
+  Zap,
 } from "lucide-react";
-import heroImage from "./assets/polymentor-hero.png";
+import ChatInterface from "./components/ChatInterface";
 
 const navItems = [
   { to: "/", label: "Overview" },
-  { to: "/work-guide", label: "Work Guide" },
-  { to: "/fine-tune", label: "Fine-Tune" },
+  { to: "/chat", label: "Chat" },
+  { to: "/polycode", label: "PolyCode" },
+  { to: "/mlops", label: "MLOps" },
   { to: "/deploy", label: "Deploy" },
-  { to: "/languages", label: "Languages" },
+  { to: "/vision", label: "Vision" },
 ];
 
 const stats = [
-  { label: "Runtime", value: "Groq API" },
-  { label: "Local option", value: "LoRA adapter" },
-  { label: "Website", value: "React + Vite" },
-  { label: "Deploy", value: "HF Hub + Spaces" },
+  { label: "Live chat", value: "Groq API" },
+  { label: "Data store", value: "MongoDB" },
+  { label: "Retrain", value: "Daily MLOps" },
+  { label: "Training", value: "Cloud GPUs" },
 ];
 
 const missionCards = [
   {
-    icon: GraduationCap,
-    title: "Teach code clearly",
-    text: "PolyMentor explains concepts at the learner's level, from first loops to debugging larger programs.",
-  },
-  {
-    icon: Wrench,
-    title: "Find likely bugs",
-    text: "Users paste code and get likely bugs, why they happen, corrected examples, and next practice steps.",
-  },
-  {
-    icon: FileCode2,
-    title: "Build across languages",
-    text: "The assistant can write examples, translate ideas, refactor snippets, and generate tests in many languages.",
-  },
-];
-
-const workGuide = [
-  {
-    icon: KeyRound,
-    title: "1. Prepare the environment",
-    text: "Use the project venv for Groq chatbot work. Use Python 3.12 plus CUDA PyTorch only for local GPU fine-tuning.",
-    command:
-      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\nexport GROQ_API_KEY=\"your_key\"",
-  },
-  {
     icon: MessageSquareCode,
-    title: "2. Run PolyMentor locally",
-    text: "Start the terminal tutor for quick testing, or run the FastAPI server for app and Space integration.",
-    command: "bash scripts/run_tutor.sh\nuvicorn src.api.app:app --reload",
+    title: "Ship fast with Groq",
+    text: "PolyCode answers coding questions instantly through the Groq API — lessons, bug fixes, refactors, and tests across many languages.",
+  },
+  {
+    icon: Database,
+    title: "Learn from every chat",
+    text: "Every user question and Groq response is stored in MongoDB, building a growing dataset of real programming conversations.",
   },
   {
     icon: BrainCircuit,
-    title: "3. Improve the tutor behavior",
-    text: "Add better prompt instructions, more high-quality examples under data, and focused bug explanation patterns.",
-    command: "src/inference/pipeline.py\ndata/raw/pro_training_data.json\ndata/processed/train.json",
+    title: "Improve automatically",
+    text: "A dedicated ML model retrains daily on cloud GPUs via MLOps, then redeploys — getting stronger at programming with each cycle.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Surpass Groq over time",
+    text: "The custom model is tuned on PolyCode's own data. As training data grows, it becomes more powerful than Groq for programming tasks.",
+  },
+];
+
+const polycodeSteps = [
+  {
+    icon: KeyRound,
+    title: "1. Configure environment",
+    text: "Install the PolyCode backend, Groq SDK, and MongoDB driver. Set API keys and database connection strings.",
+    command:
+      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\nexport GROQ_API_KEY=\"your_key\"\nexport MONGODB_URI=\"mongodb://localhost:27017/polycode\"",
+  },
+  {
+    icon: Server,
+    title: "2. Start PolyCode API",
+    text: "Run the FastAPI server. It handles chat requests through Groq and persists every conversation to MongoDB.",
+    command:
+      "uvicorn src.api.app:app --reload\n# Endpoints: /chat /review /teach",
+  },
+  {
+    icon: Database,
+    title: "3. MongoDB schema",
+    text: "Each chat document stores the user message, Groq response, language, difficulty level, timestamp, and session metadata.",
+    command:
+      "{\n  \"session_id\": \"...\",\n  \"user_message\": \"...\",\n  \"groq_response\": \"...\",\n  \"language\": \"python\",\n  \"level\": \"beginner\",\n  \"created_at\": \"2026-06-06T12:00:00Z\"\n}",
   },
   {
     icon: CheckCircle2,
-    title: "4. Validate before sharing",
-    text: "Test beginner lessons, bug-fix tasks, multi-language code generation, and ambiguous requests that should trigger questions.",
+    title: "4. Validate the pipeline",
+    text: "Send test chats, confirm Groq responses arrive quickly, and verify documents appear in MongoDB.",
     command:
       "python -m py_compile src/inference/pipeline.py src/api/app.py\nnpm --prefix website run build",
   },
 ];
 
-const runtimeFlow = [
-  "User asks a coding question or pastes code.",
-  "PolyMentor adds language, level, and tutor instructions.",
-  "Groq returns a fast mentor response for the default runtime.",
-  "Optional local LoRA adapter can be trained and pushed to Hugging Face Hub.",
-  "A Hugging Face Space can expose the chatbot through Gradio or Docker.",
+const polycodeFlow = [
+  "User asks a coding question or pastes code on PolyCode.",
+  "PolyCode sends the request to Groq with tutor instructions and context.",
+  "Groq returns a fast, high-quality programming answer.",
+  "The full conversation pair is saved to MongoDB for future training.",
+  "Users get instant help; the dataset grows with every session.",
 ];
 
-const fineTuneSteps = [
+const mlopsSteps = [
   {
-    title: "Create a CUDA training venv",
+    title: "Schedule daily extraction",
     command:
-      "deactivate\npy -3.12 -m venv venv312\n.\\venv312\\Scripts\\Activate.ps1\npython -m pip install --upgrade pip",
+      "# Cron or Airflow DAG — runs every night\npython scripts/extract_training_data.py \\\n  --mongodb-uri $MONGODB_URI \\\n  --output data/processed/daily_train.json \\\n  --since yesterday",
   },
   {
-    title: "Install project and CUDA PyTorch",
+    title: "Launch cloud GPU training",
     command:
-      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\npython -m pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision torchaudio",
+      "# RunPod / Lambda / GCP / AWS\npython scripts/train_cloud.py \\\n  --data data/processed/daily_train.json \\\n  --base-model Qwen/Qwen2.5-Coder-7B-Instruct \\\n  --output models_saved/polycode-lora \\\n  --epochs 3",
   },
   {
-    title: "Run local LoRA fine-tuning",
+    title: "Evaluate against Groq baseline",
     command:
-      "bash scripts/train.sh\n# checkpoint: models_saved/polymentor-chatbot-lora",
+      "python scripts/evaluate_model.py \\\n  --checkpoint models_saved/polycode-lora \\\n  --benchmark data/processed/eval_set.json \\\n  --compare-groq",
   },
   {
-    title: "Tune safely",
+    title: "Redeploy if quality improves",
     command:
-      "BASE_MODEL=Qwen/Qwen2.5-Coder-0.5B-Instruct EPOCHS=3 MAX_VENDOR_FILES=200 bash scripts/train.sh",
-  },
-];
-
-const hubSteps = [
-  {
-    title: "Login",
-    command: "python -m pip install -U huggingface_hub\nhf auth login",
-  },
-  {
-    title: "Create or choose a model repo",
-    command: "hf repo create polymentor-chatbot-lora --type model",
-  },
-  {
-    title: "Upload checkpoint folder",
-    command:
-      "hf upload your-username/polymentor-chatbot-lora models_saved/polymentor-chatbot-lora . --repo-type model",
-  },
-  {
-    title: "Add a model card",
-    command:
-      "Create README.md in the model repo with base model, data notes, intended use, and limitations.",
+      "python scripts/deploy_model.py \\\n  --checkpoint models_saved/polycode-lora \\\n  --target hf://your-org/polycode-model \\\n  --promote-if-better-than-groq",
   },
 ];
 
-const spaceSteps = [
+const mlopsCycle = [
   {
-    title: "Create a Space",
-    command:
-      "On Hugging Face: New Space -> Gradio or Docker -> name it polymentor-space",
+    icon: Database,
+    title: "Extract",
+    text: "Pull new chat pairs from MongoDB since the last training run.",
   },
   {
-    title: "Add secrets",
-    command:
-      "Space Settings -> Secrets\nGROQ_API_KEY=your_key\nGROQ_MODEL=llama-3.3-70b-versatile",
+    icon: Cpu,
+    title: "Train",
+    text: "Fine-tune the coding model on cloud GPUs with LoRA or full fine-tuning.",
   },
   {
-    title: "Minimal Gradio app",
-    command:
-      "app.py imports PolyMentorPipeline, creates a textbox for question/code, and calls pipeline.chat().",
+    icon: CheckCircle2,
+    title: "Evaluate",
+    text: "Benchmark against Groq on programming tasks — bug fixes, code gen, explanations.",
   },
   {
-    title: "Push files",
+    icon: Rocket,
+    title: "Deploy",
+    text: "Push the improved checkpoint to inference and optionally route traffic from Groq.",
+  },
+];
+
+const deployPolycodeSteps = [
+  {
+    title: "Deploy PolyCode frontend",
     command:
-      "git clone https://huggingface.co/spaces/your-username/polymentor-space\n# add app.py, requirements.txt, src/\ngit add . && git commit -m \"Deploy PolyMentor\" && git push",
+      "npm --prefix website run build\n# Host on Vercel, Netlify, or HF Spaces",
+  },
+  {
+    title: "Configure production secrets",
+    command:
+      "GROQ_API_KEY=your_key\nGROQ_MODEL=llama-3.3-70b-versatile\nMONGODB_URI=mongodb+srv://user:pass@cluster/polycode",
+  },
+  {
+    title: "Run API with MongoDB Atlas",
+    command:
+      "uvicorn src.api.app:app --host 0.0.0.0 --port 8000\n# Use MongoDB Atlas for managed cloud storage",
+  },
+  {
+    title: "Monitor chat volume",
+    command:
+      "db.conversations.countDocuments()\ndb.conversations.aggregate([{ $group: { _id: \"$language\", count: { $sum: 1 } } }])",
+  },
+];
+
+const deployModelSteps = [
+  {
+    title: "Upload checkpoint to HF Hub",
+    command:
+      "hf auth login\nhf upload your-org/polycode-model models_saved/polycode-lora . --repo-type model",
+  },
+  {
+    title: "Serve inference endpoint",
+    command:
+      "# HF Inference Endpoint or custom GPU server\npython scripts/serve_model.py \\\n  --model your-org/polycode-model \\\n  --port 8080",
+  },
+  {
+    title: "Gradual Groq → custom switch",
+    command:
+      "# Route percentage of traffic to custom model\nPOLYCODE_INFERENCE=groq          # Phase 1: 100% Groq\nPOLYCODE_INFERENCE=hybrid:20       # Phase 2: 20% custom\nPOLYCODE_INFERENCE=custom          # Phase 3: 100% custom",
+  },
+  {
+    title: "Keep MLOps running",
+    command:
+      "# Daily cron on cloud VM or CI pipeline\n0 2 * * * /opt/polycode/scripts/run_mlops_pipeline.sh",
   },
 ];
 
@@ -177,6 +214,40 @@ const languages = [
   "SQL",
   "HTML",
   "CSS",
+];
+
+const visionPhases = [
+  {
+    icon: Zap,
+    title: "Phase 1 — Groq-first PolyCode",
+    text: "Launch PolyCode with Groq for instant coding help. MongoDB captures every conversation from day one.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Phase 2 — Daily MLOps loop",
+    text: "Automated pipeline extracts MongoDB data, trains on cloud GPUs, evaluates, and redeploys every 24 hours.",
+  },
+  {
+    icon: BrainCircuit,
+    title: "Phase 3 — Hybrid inference",
+    text: "Route a growing share of traffic to the custom model as it proves equal or better on programming benchmarks.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Phase 4 — Custom model leads",
+    text: "PolyCode's own model surpasses Groq for programming — trained on real user data, optimized for code tutoring.",
+  },
+];
+
+const conceptsCovered = [
+  "Groq API integration for fast LLM responses",
+  "MongoDB for persistent chat storage and dataset building",
+  "Data extraction and preprocessing pipelines",
+  "LoRA / full fine-tuning on cloud GPUs",
+  "MLOps automation — scheduling, CI/CD, monitoring",
+  "Model evaluation and A/B comparison against Groq",
+  "Automated redeployment and traffic routing",
+  "Full-stack deployment — API, frontend, inference",
 ];
 
 function Layout({ children }) {
@@ -230,33 +301,64 @@ function Layout({ children }) {
   );
 }
 
+function HeroVisual() {
+  const nodes = [
+    { icon: MessageSquareCode, label: "PolyCode", sub: "User chat" },
+    { icon: Zap, label: "Groq API", sub: "Live answers" },
+    { icon: Database, label: "MongoDB", sub: "Store chats" },
+    { icon: Cpu, label: "Cloud GPU", sub: "Daily train" },
+    { icon: BrainCircuit, label: "Custom ML", sub: "Beat Groq" },
+  ];
+
+  return (
+    <div className="hero-visual" aria-label="PolyMentor architecture flywheel">
+      {nodes.map((node, index) => {
+        const Icon = node.icon;
+        return (
+          <div className="hero-visual-node" key={node.label}>
+            <div className="hero-visual-icon">
+              <Icon size={22} aria-hidden="true" />
+            </div>
+            <strong>{node.label}</strong>
+            <span>{node.sub}</span>
+            {index < nodes.length - 1 && (
+              <span className="hero-visual-arrow" aria-hidden="true">
+                →
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function Hero() {
   return (
     <section className="hero">
       <div className="hero-copy">
         <p className="eyebrow">
           <Sparkles size={16} aria-hidden="true" />
-          Groq chatbot plus local fine-tuning path
+          Groq today. Custom model tomorrow.
         </p>
         <h1>PolyMentor</h1>
         <p className="hero-text">
-          A coding tutor chatbot that teaches programming, helps identify bugs,
-          writes code across languages, and can be deployed on Hugging Face.
+          PolyCode powers coding help through Groq and stores every conversation in
+          MongoDB. A custom ML model retrains daily on cloud GPUs via MLOps — and
+          eventually surpasses Groq for programming.
         </p>
         <div className="hero-actions">
-          <NavLink to="/work-guide" className="primary-action">
+          <NavLink to="/polycode" className="primary-action">
             <GraduationCap size={18} aria-hidden="true" />
-            Complete guide
+            Build PolyCode
           </NavLink>
-          <NavLink to="/deploy" className="secondary-action">
-            <Cloud size={18} aria-hidden="true" />
-            Deploy on HF
+          <NavLink to="/vision" className="secondary-action">
+            <TrendingUp size={18} aria-hidden="true" />
+            Full vision
           </NavLink>
         </div>
       </div>
-      <div className="hero-media" aria-label="PolyMentor coding tutor illustration">
-        <img src={heroImage} alt="" />
-      </div>
+      <HeroVisual />
     </section>
   );
 }
@@ -273,7 +375,7 @@ function OverviewPage() {
           </article>
         ))}
       </section>
-      <section className="section purpose-grid">
+      <section className="section purpose-grid four-col">
         {missionCards.map((card) => {
           const Icon = card.icon;
           return (
@@ -291,29 +393,44 @@ function OverviewPage() {
             <Cpu size={16} aria-hidden="true" />
             Architecture
           </p>
-          <h2>Groq for production. LoRA for experiments.</h2>
+          <h2>Groq serves users. MongoDB feeds the model. MLOps closes the loop.</h2>
+          <p className="band-text">
+            PolyCode is the product users interact with. Groq provides fast inference
+            today. MongoDB accumulates training data from real conversations. MLOps
+            retrains and redeploys the custom model every day on cloud GPUs until it
+            outperforms Groq on programming tasks.
+          </p>
         </div>
-        <pre>{`Default runtime: Groq Chat Completions
-Optional local checkpoint: models_saved/polymentor-chatbot-lora
-Website: React/Vite
-API: FastAPI /chat /review /teach`}</pre>
+        <pre>{`PolyCode (React) → FastAPI → Groq API → response
+                              ↓
+                         MongoDB (chat logs)
+                              ↓
+              Daily MLOps: extract → train → eval → deploy
+                              ↓
+                    Custom model (Cloud GPU inference)
+                              ↓
+              Eventually replace Groq for programming`}</pre>
       </section>
     </Layout>
   );
 }
 
-function WorkGuidePage() {
+function PolyCodePage() {
   return (
     <Layout>
       <section className="page-heading compact">
         <p className="eyebrow">
           <GitBranch size={16} aria-hidden="true" />
-          Complete workflow
+          PolyCode setup
         </p>
-        <h1>Build, test, improve, and share PolyMentor step by step.</h1>
+        <h1>Build the chat website with Groq API and MongoDB storage.</h1>
+        <p className="page-subtext">
+          PolyCode is the user-facing coding tutor. Groq handles live chat. MongoDB
+          stores every conversation so the ML model can learn from real usage.
+        </p>
       </section>
       <section className="section start-list">
-        {workGuide.map((step) => {
+        {polycodeSteps.map((step) => {
           const Icon = step.icon;
           return (
             <article className="start-row" key={step.title}>
@@ -328,7 +445,7 @@ function WorkGuidePage() {
         })}
       </section>
       <section className="section architecture-band">
-        {runtimeFlow.map((item, index) => (
+        {polycodeFlow.map((item, index) => (
           <article className="architecture-row" key={item}>
             <span>{index + 1}</span>
             <p>{item}</p>
@@ -339,18 +456,34 @@ function WorkGuidePage() {
   );
 }
 
-function FineTunePage() {
+function MlopsPage() {
   return (
     <Layout>
       <section className="page-heading">
         <p className="eyebrow">
-          <BrainCircuit size={16} aria-hidden="true" />
-          Local RTX fine-tuning
+          <RefreshCw size={16} aria-hidden="true" />
+          Daily MLOps pipeline
         </p>
-        <h1>Train a small local adapter, then save it in models_saved.</h1>
+        <h1>Extract MongoDB chats, retrain on cloud GPUs, redeploy automatically.</h1>
+        <p className="page-subtext">
+          The ML model does not serve users directly at first. It pulls Groq conversation
+          data from MongoDB, retrains every day, and redeploys when quality improves.
+        </p>
+      </section>
+      <section className="section cycle-grid">
+        {mlopsCycle.map((step) => {
+          const Icon = step.icon;
+          return (
+            <article className="cycle-panel" key={step.title}>
+              <Icon size={28} aria-hidden="true" />
+              <h2>{step.title}</h2>
+              <p>{step.text}</p>
+            </article>
+          );
+        })}
       </section>
       <section className="section lab-grid">
-        {fineTuneSteps.map((step, index) => (
+        {mlopsSteps.map((step, index) => (
           <article className="lesson-panel guide-panel" key={step.title}>
             <span className="row-index">{index + 1}</span>
             <h2>{step.title}</h2>
@@ -361,8 +494,10 @@ function FineTunePage() {
       <section className="section note-band">
         <CheckCircle2 size={24} aria-hidden="true" />
         <p>
-          Use Python 3.12 for CUDA PyTorch on Windows. Your Python 3.14 venv is
-          fine for Groq/API work, but not for RTX CUDA wheels.
+          Use cloud GPU providers like RunPod, Lambda Labs, GCP Vertex AI, or AWS
+          SageMaker for training. Schedule the pipeline with cron, GitHub Actions, or
+          Airflow. Groq stays the live backend until the custom model beats it on eval
+          benchmarks.
         </p>
       </section>
     </Layout>
@@ -375,18 +510,22 @@ function DeployPage() {
       <section className="page-heading compact">
         <p className="eyebrow">
           <UploadCloud size={16} aria-hidden="true" />
-          Hugging Face deployment
+          Deployment
         </p>
-        <h1>Publish the adapter on Hub and serve the chatbot from a Space.</h1>
+        <h1>Deploy PolyCode for users and the custom model for inference.</h1>
+        <p className="page-subtext">
+          Production runs Groq + MongoDB today. As the custom model matures, gradually
+          shift inference traffic from Groq to your own checkpoint.
+        </p>
       </section>
       <section className="section deploy-layout">
         <div>
           <div className="section-label">
             <Server size={18} aria-hidden="true" />
-            <h2>HF Hub model repo</h2>
+            <h2>PolyCode production</h2>
           </div>
           <div className="deploy-stack">
-            {hubSteps.map((step, index) => (
+            {deployPolycodeSteps.map((step, index) => (
               <article className="lesson-panel compact-panel" key={step.title}>
                 <span className="row-index">{index + 1}</span>
                 <h3>{step.title}</h3>
@@ -398,10 +537,10 @@ function DeployPage() {
         <div>
           <div className="section-label">
             <Cloud size={18} aria-hidden="true" />
-            <h2>HF Space app</h2>
+            <h2>Custom model inference</h2>
           </div>
           <div className="deploy-stack">
-            {spaceSteps.map((step, index) => (
+            {deployModelSteps.map((step, index) => (
               <article className="lesson-panel compact-panel" key={step.title}>
                 <span className="row-index">{index + 1}</span>
                 <h3>{step.title}</h3>
@@ -415,15 +554,33 @@ function DeployPage() {
   );
 }
 
-function LanguagesPage() {
+function VisionPage() {
   return (
     <Layout>
       <section className="page-heading compact">
         <p className="eyebrow">
-          <Languages size={16} aria-hidden="true" />
-          Multi-language coding help
+          <TrendingUp size={16} aria-hidden="true" />
+          Long-term vision
         </p>
-        <h1>Ask for lessons, bug fixes, refactors, tests, or translations.</h1>
+        <h1>From Groq-powered chatbot to the best programming model.</h1>
+        <p className="page-subtext">
+          PolyMentor covers the full stack — API integration, data engineering,
+          machine learning, MLOps, cloud GPUs, and deployment — in one cohesive project.
+        </p>
+      </section>
+      <section className="section roadmap-list">
+        {visionPhases.map((phase) => {
+          const Icon = phase.icon;
+          return (
+            <article className="roadmap-item" key={phase.title}>
+              <Icon size={22} aria-hidden="true" />
+              <div>
+                <h2>{phase.title}</h2>
+                <p>{phase.text}</p>
+              </div>
+            </article>
+          );
+        })}
       </section>
       <section className="section language-grid">
         {languages.map((language) => (
@@ -433,18 +590,19 @@ function LanguagesPage() {
           </article>
         ))}
       </section>
-      <section className="section roadmap-list">
-        {[
-          "Use Groq for fast coding answers.",
-          "Use local LoRA checkpoints for experiments and demonstrations.",
-          "Use Hugging Face Spaces to share the tutor with friends or a class.",
-          "Keep outputs educational: bugs, explanation, fixed code, lesson, next steps.",
-        ].map((item) => (
-          <article className="roadmap-item" key={item}>
-            <Code2 size={22} aria-hidden="true" />
-            <p>{item}</p>
-          </article>
-        ))}
+      <section className="section concepts-band">
+        <div className="section-label">
+          <Code2 size={18} aria-hidden="true" />
+          <h2>Concepts this project covers</h2>
+        </div>
+        <div className="concepts-grid">
+          {conceptsCovered.map((concept) => (
+            <article className="concept-item" key={concept}>
+              <CheckCircle2 size={18} aria-hidden="true" />
+              <p>{concept}</p>
+            </article>
+          ))}
+        </div>
       </section>
     </Layout>
   );
@@ -454,10 +612,11 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<OverviewPage />} />
-      <Route path="/work-guide" element={<WorkGuidePage />} />
-      <Route path="/fine-tune" element={<FineTunePage />} />
+      <Route path="/chat" element={<ChatInterface />} />
+      <Route path="/polycode" element={<PolyCodePage />} />
+      <Route path="/mlops" element={<MlopsPage />} />
       <Route path="/deploy" element={<DeployPage />} />
-      <Route path="/languages" element={<LanguagesPage />} />
+      <Route path="/vision" element={<VisionPage />} />
     </Routes>
   );
 }

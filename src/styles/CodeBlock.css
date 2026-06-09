@@ -1,0 +1,213 @@
+/* Code Block Styles */
+
+.code-block-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    background: #f5f5f5;
+    margin: 8px 0;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.code-block-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #2d2d2d;
+    color: #fff;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.language-badge {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-size: 11px;
+    padding: 2px 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: #52c41a;
+}
+
+.copy-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.copy-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.copy-button:active {
+    transform: translateY(0);
+}
+
+.copy-button span {
+    display: inline;
+}
+
+.code-block {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    overflow-x: auto;
+    margin: 0;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    tab-size: 2;
+}
+
+.code-block::-webkit-scrollbar {
+    height: 6px;
+}
+
+.code-block::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+.code-block::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+}
+
+.code-block::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+.code-block code {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    tab-size: 2;
+    white-space: pre;
+}
+
+/* Language-specific syntax highlighting */
+
+/* Python */
+.code-block.language-python code {
+    /* Python-like colors */
+}
+
+/* JavaScript/TypeScript */
+.code-block.language-javascript code,
+.code-block.language-typescript code {
+    /* JavaScript colors */
+}
+
+/* Java */
+.code-block.language-java code {
+    /* Java colors */
+}
+
+/* C++ */
+.code-block.language-cpp code {
+    /* C++ colors */
+}
+
+/* Go */
+.code-block.language-go code {
+    /* Go colors */
+}
+
+/* Rust */
+.code-block.language-rust code {
+    /* Rust colors */
+}
+
+/* Default colors for all languages */
+.code-block code {
+    color: #d4d4d4;
+}
+
+/* Common patterns */
+.code-block .keyword {
+    color: #569cd6;
+    font-weight: bold;
+}
+
+.code-block .string {
+    color: #ce9178;
+}
+
+.code-block .number {
+    color: #b5cea8;
+}
+
+.code-block .comment {
+    color: #6a9955;
+    font-style: italic;
+}
+
+.code-block .function {
+    color: #dcdcaa;
+}
+
+.code-block .class {
+    color: #4ec9b0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .code-block {
+        font-size: 12px;
+        padding: 10px;
+    }
+
+    .code-block-header {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+
+    .copy-button {
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+
+    .copy-button span {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .code-block {
+        font-size: 11px;
+        padding: 8px;
+        max-height: 200px;
+    }
+
+    .code-block-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+}

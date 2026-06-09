@@ -1,14 +1,14 @@
 # PolyMentor Website
 
-React website for the Groq-powered PolyMentor coding tutor chatbot.
+React guide site for the PolyMentor project — PolyCode (Groq + MongoDB) with daily MLOps retraining on cloud GPUs.
 
 ## Routes
 
-- `/` explains the chatbot purpose.
-- `/work-guide` gives the complete local workflow.
-- `/fine-tune` explains the RTX/LoRA training path.
-- `/deploy` explains Hugging Face Hub and Space deployment.
-- `/languages` describes multi-language coding help.
+- `/` — Project overview and architecture flywheel
+- `/polycode` — Build PolyCode with Groq API and MongoDB storage
+- `/mlops` — Daily extract → train → evaluate → deploy pipeline
+- `/deploy` — Production deployment for PolyCode and custom model inference
+- `/vision` — Long-term roadmap and concepts covered
 
 ## Commands
 
