@@ -3,8 +3,8 @@
 .code-block-wrapper {
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #e0e0e0;
-    background: #f5f5f5;
+    border: 1px solid #d0d5db;
+    background: #f9fafb;
     margin: 8px 0;
     animation: slideDown 0.3s ease;
 }
@@ -25,27 +25,29 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #2d2d2d;
+    background: #10243f;
     color: #fff;
     padding: 8px 12px;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 11px;
+    font-weight: 700;
+    border-bottom: 2px solid #b2472e;
 }
 
 .language-badge {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
-    font-size: 11px;
+    font-size: 10px;
     padding: 2px 6px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    color: #52c41a;
+    background: #b2472e;
+    border-radius: 3px;
+    color: #ffffff;
+    font-weight: 700;
 }
 
 .copy-button {
     background: rgba(255, 255, 255, 0.1);
-    color: white;
+    color: #dce6f0;
     border: 1px solid rgba(255, 255, 255, 0.2);
     padding: 4px 8px;
     border-radius: 4px;
@@ -53,16 +55,16 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     transition: all 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .copy-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: #b2472e;
+    border-color: #b2472e;
     transform: translateY(-1px);
 }
 
@@ -75,13 +77,13 @@
 }
 
 .code-block {
-    background: #1e1e1e;
-    color: #d4d4d4;
+    background: #0f1419;
+    color: #d1dce6;
     padding: 12px;
     overflow-x: auto;
     margin: 0;
     font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.5;
     tab-size: 2;
 }
@@ -91,16 +93,16 @@
 }
 
 .code-block::-webkit-scrollbar-track {
-    background: #2d2d2d;
+    background: #1a1f26;
 }
 
 .code-block::-webkit-scrollbar-thumb {
-    background: #555;
+    background: #b2472e;
     border-radius: 3px;
 }
 
 .code-block::-webkit-scrollbar-thumb:hover {
-    background: #777;
+    background: #d1613d;
 }
 
 .code-block code {
@@ -146,51 +148,51 @@
 
 /* Default colors for all languages */
 .code-block code {
-    color: #d4d4d4;
+    color: #d1dce6;
 }
 
 /* Common patterns */
 .code-block .keyword {
-    color: #569cd6;
-    font-weight: bold;
+    color: #6ab1ff;
+    font-weight: 700;
 }
 
 .code-block .string {
-    color: #ce9178;
+    color: #e8b564;
 }
 
 .code-block .number {
-    color: #b5cea8;
+    color: #a1c672;
 }
 
 .code-block .comment {
-    color: #6a9955;
+    color: #5a7578;
     font-style: italic;
 }
 
 .code-block .function {
-    color: #dcdcaa;
+    color: #f0d595;
 }
 
 .code-block .class {
-    color: #4ec9b0;
+    color: #5fc9c0;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
     .code-block {
-        font-size: 12px;
+        font-size: 11px;
         padding: 10px;
     }
 
     .code-block-header {
         padding: 6px 10px;
-        font-size: 11px;
+        font-size: 10px;
     }
 
     .copy-button {
         padding: 3px 6px;
-        font-size: 10px;
+        font-size: 9px;
     }
 
     .copy-button span {

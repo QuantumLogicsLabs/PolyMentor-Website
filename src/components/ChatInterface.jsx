@@ -203,13 +203,13 @@ export default function ChatInterface() {
             )}
 
             <form className="chat-input-area" onSubmit={sendMessage}>
-                <div className="settings-row">
-                    <div className="setting-group">
-                        <label>Language</label>
+                <div className="compact-settings">
+                    <div className="settings-badge">
                         <select
                             value={language}
                             onChange={(e) => setLanguage(e.target.value)}
                             disabled={loading}
+                            title="Programming Language"
                         >
                             {languages.map((lang) => (
                                 <option key={lang} value={lang}>
@@ -219,12 +219,12 @@ export default function ChatInterface() {
                         </select>
                     </div>
 
-                    <div className="setting-group">
-                        <label>Level</label>
+                    <div className="settings-badge">
                         <select
                             value={level}
                             onChange={(e) => setLevel(e.target.value)}
                             disabled={loading}
+                            title="Difficulty Level"
                         >
                             <option value="beginner">Beginner</option>
                             <option value="intermediate">Intermediate</option>
