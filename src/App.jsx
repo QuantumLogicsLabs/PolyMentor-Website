@@ -25,11 +25,9 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
-import ChatInterface from "./components/ChatInterface";
 
 const navItems = [
   { to: "/", label: "Overview" },
-  { to: "/chat", label: "Chat" },
   { to: "/polycode", label: "PolyCode" },
   { to: "/mlops", label: "MLOps" },
   { to: "/deploy", label: "Deploy" },
@@ -612,7 +610,6 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<OverviewPage />} />
-      <Route path="/chat" element={<ChatInterface />} />
       <Route path="/polycode" element={<PolyCodePage />} />
       <Route path="/mlops" element={<MlopsPage />} />
       <Route path="/deploy" element={<DeployPage />} />
