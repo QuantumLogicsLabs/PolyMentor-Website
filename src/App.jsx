@@ -62,7 +62,7 @@ const workGuide = [
     title: "1. Prepare the environment",
     text: "Use the project venv for Groq chatbot work. Use Python 3.12 plus CUDA PyTorch only for local GPU fine-tuning.",
     command:
-      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\nexport GROQ_API_KEY=\"your_key\"",
+      "python -m pip install -e .\npython -m pip install -r requirements.txt\nexport GROQ_API_KEY=\"your_key\"",
   },
   {
     icon: MessageSquareCode,
@@ -102,7 +102,7 @@ const fineTuneSteps = [
   {
     title: "Install project and CUDA PyTorch",
     command:
-      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\npython -m pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision torchaudio",
+      "python -m pip install -e .\npython -m pip install -r requirements.txt\npython -m pip install --index-url https://download.pytorch.org/whl/cu124 torch torchvision torchaudio",
   },
   {
     title: "Run local LoRA fine-tuning",
