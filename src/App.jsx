@@ -151,48 +151,57 @@ const mlopsCycle = [
 
 const deployPolycodeSteps = [
   {
-    title: "Deploy PolyCode frontend",
+    title: "Prepare production secrets",
     command:
-      "npm --prefix website run build\n# Host on Vercel, Netlify, or HF Spaces",
+      "GROQ_API_KEY=your_groq_key\nGROQ_MODEL=llama-3.3-70b-versatile\nMONGODB_URI=mongodb+srv://user:pass@cluster/?retryWrites=true&w=majority\nMONGODB_DB=polycode\nMONGODB_COLLECTION=pormpts",
   },
   {
-    title: "Configure production secrets",
+    title: "Install and run the API",
     command:
-      "GROQ_API_KEY=your_key\nGROQ_MODEL=llama-3.3-70b-versatile\nMONGODB_URI=mongodb+srv://user:pass@cluster/polycode",
+      "python -m pip install -e .\npython -m pip install -r requirements.txt\nuvicorn src.api.app:app --host 0.0.0.0 --port 8000",
   },
   {
-    title: "Run API with MongoDB Atlas",
+    title: "Export cleaned MongoDB prompts",
     command:
-      "uvicorn src.api.app:app --host 0.0.0.0 --port 8000\n# Use MongoDB Atlas for managed cloud storage",
+      "python scripts/export_mongodb_prompts.py\n# Reads: polycode/pormpts\n# Writes: data/processed/mongodb_prompts.json",
   },
   {
-    title: "Monitor chat volume",
+    title: "Deploy the website",
     command:
-      "db.conversations.countDocuments()\ndb.conversations.aggregate([{ $group: { _id: \"$language\", count: { $sum: 1 } } }])",
+      "npm --prefix website install\nnpm --prefix website run build\n# Host website/dist on Vercel, Netlify, or any static host",
   },
 ];
 
 const deployModelSteps = [
   {
-    title: "Upload checkpoint to HF Hub",
+    title: "Train from MongoDB conversations",
     command:
-      "hf auth login\nhf upload your-org/polycode-model models_saved/polycode-lora . --repo-type model",
+      "export FETCH_MONGODB_PROMPTS=1\nbash scripts/train.sh\n# Output: models_saved/polymentor-chatbot-lora",
   },
   {
-    title: "Serve inference endpoint",
+    title: "Run scheduled extraction in GitHub Actions",
     command:
-      "# HF Inference Endpoint or custom GPU server\npython scripts/serve_model.py \\\n  --model your-org/polycode-model \\\n  --port 8080",
+      "# Add GitHub repository secret:\nMONGODB_URI=mongodb+srv://user:pass@cluster/?retryWrites=true&w=majority\n\n# Workflow:\n.github/workflows/mongodb-prompts-pipeline.yml",
   },
   {
-    title: "Gradual Groq → custom switch",
+    title: "Keep cleanup reporting enabled",
     command:
-      "# Route percentage of traffic to custom model\nPOLYCODE_INFERENCE=groq          # Phase 1: 100% Groq\nPOLYCODE_INFERENCE=hybrid:20       # Phase 2: 20% custom\nPOLYCODE_INFERENCE=custom          # Phase 3: 100% custom",
+      "python scripts/maintenance_cleanup.py --min-mb 50\n# Removes generated caches\n# Reports large folders like models_saved, venv312, venv",
   },
   {
-    title: "Keep MLOps running",
+    title: "Deploy model only after evaluation",
     command:
-      "# Daily cron on cloud VM or CI pipeline\n0 2 * * * /opt/polycode/scripts/run_mlops_pipeline.sh",
+      "# Keep Groq as production runtime first.\n# Promote the local LoRA adapter only after benchmark quality improves.\n# Use a GPU endpoint for custom inference.",
   },
+];
+
+const deploymentChecklist = [
+  "MongoDB Atlas collection exists as polycode/pormpts.",
+  "Repository secret MONGODB_URI is configured for GitHub Actions.",
+  "API host has GROQ_API_KEY and MongoDB credentials.",
+  "Static website build passes with npm --prefix website run build.",
+  "Cleaned prompts export to data/processed/mongodb_prompts.json.",
+  "Training runs only on a CUDA/GPU-capable environment.",
 ];
 
 const languages = [
@@ -510,17 +519,28 @@ function DeployPage() {
           <UploadCloud size={16} aria-hidden="true" />
           Deployment
         </p>
-        <h1>Deploy PolyCode for users and the custom model for inference.</h1>
+        <h1>Deploy PolyMentor with Groq, MongoDB prompts, and retraining automation.</h1>
         <p className="page-subtext">
-          Production runs Groq + MongoDB today. As the custom model matures, gradually
-          shift inference traffic from Groq to your own checkpoint.
+          Production serves users through the Groq-powered FastAPI backend while
+          MongoDB stores conversations in <strong>polycode/pormpts</strong>. The
+          training pipeline exports those prompts, cleans them, and feeds them into
+          the local LoRA trainer when a GPU environment is available.
+        </p>
+      </section>
+      <section className="section note-band deploy-note">
+        <Wrench size={24} aria-hidden="true" />
+        <p>
+          GitHub Actions can run the prompt export and cleanup report on a schedule,
+          but it cannot run every 15 seconds. The workflow uses GitHub's supported
+          5-minute cron interval. Full model retraining should run on a GPU machine
+          or cloud GPU service, not on a normal scheduled GitHub runner.
         </p>
       </section>
       <section className="section deploy-layout">
         <div>
           <div className="section-label">
             <Server size={18} aria-hidden="true" />
-            <h2>PolyCode production</h2>
+            <h2>Production app</h2>
           </div>
           <div className="deploy-stack">
             {deployPolycodeSteps.map((step, index) => (
@@ -535,7 +555,7 @@ function DeployPage() {
         <div>
           <div className="section-label">
             <Cloud size={18} aria-hidden="true" />
-            <h2>Custom model inference</h2>
+            <h2>Prompt training pipeline</h2>
           </div>
           <div className="deploy-stack">
             {deployModelSteps.map((step, index) => (
@@ -546,6 +566,20 @@ function DeployPage() {
               </article>
             ))}
           </div>
+        </div>
+      </section>
+      <section className="section concepts-band">
+        <div className="section-label">
+          <CheckCircle2 size={18} aria-hidden="true" />
+          <h2>Deployment checklist</h2>
+        </div>
+        <div className="concepts-grid">
+          {deploymentChecklist.map((item) => (
+            <article className="concept-item" key={item}>
+              <CheckCircle2 size={18} aria-hidden="true" />
+              <p>{item}</p>
+            </article>
+          ))}
         </div>
       </section>
     </Layout>
