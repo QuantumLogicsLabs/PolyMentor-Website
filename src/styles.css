@@ -290,6 +290,15 @@ h1 {
   line-height: 1.65;
 }
 
+.page-subtext a,
+.repo-panel a {
+  color: #0d7b75;
+  font-weight: 800;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
 .band-text {
   margin: 14px 0 0;
   color: #4d5966;
