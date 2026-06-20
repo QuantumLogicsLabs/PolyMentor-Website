@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import {
-  Bot,
   BrainCircuit,
   CheckCircle2,
   Cloud,
@@ -25,6 +24,8 @@ import {
   Wrench,
   Zap,
 } from "lucide-react";
+
+const logoPath = "/logo.png";
 
 const navItems = [
   { to: "/", label: "Overview" },
@@ -266,7 +267,7 @@ function Layout({ children }) {
       <header className="site-header">
         <NavLink to="/" className="brand" aria-label="PolyMentor home" onClick={closeMenu}>
           <span className="brand-mark">
-            <Bot size={22} aria-hidden="true" />
+            <img src={logoPath} alt="" aria-hidden="true" />
           </span>
           <span>PolyMentor</span>
         </NavLink>
@@ -344,6 +345,7 @@ function Hero() {
   return (
     <section className="hero">
       <div className="hero-copy">
+        <img className="hero-logo" src={logoPath} alt="PolyMentor logo" />
         <p className="eyebrow">
           <Sparkles size={16} aria-hidden="true" />
           Groq today. Custom model tomorrow.
