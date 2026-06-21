@@ -68,30 +68,30 @@ const polycodeSteps = [
   {
     icon: KeyRound,
     title: "1. Configure environment",
-    text: "Install the PolyCode backend, Groq SDK, and MongoDB driver. Set API keys and database connection strings.",
+    text: "Install the FastAPI backend + Groq SDK. Copy .env.example → .env and add your Groq API key. Use requirements-api.txt for chat only, or requirements.txt for the full ML stack.",
     command:
-      "python -m pip install -e .\npython -m pip install -r requirements-groq.txt\nexport GROQ_API_KEY=\"your_key\"\nexport MONGODB_URI=\"mongodb://localhost:27017/polycode\"",
+      "cd D:\\QuantumLogics\\PolyMentor\npython -m pip install -r requirements-api.txt\n# Or full stack: python -m pip install -r requirements.txt\n$env:GROQ_API_KEY=\"your_key\"",
   },
   {
     icon: Server,
-    title: "2. Start PolyCode API",
-    text: "Run the FastAPI server. It handles chat requests through Groq and persists every conversation to MongoDB.",
+    title: "2. Start PolyMentor API",
+    text: "Run the FastAPI server. It answers coding questions through Groq at POST /chat. Open /docs to test in the browser.",
     command:
-      "uvicorn src.api.app:app --reload\n# Endpoints: /chat /review /teach",
+      "cd D:\\QuantumLogics\\PolyMentor\nuvicorn src.api.app:app --reload\n# http://127.0.0.1:8000/docs",
   },
   {
-    icon: Database,
-    title: "3. MongoDB schema",
-    text: "Each chat document stores the user message, Groq response, language, difficulty level, timestamp, and session metadata.",
+    icon: TerminalSquare,
+    title: "3. Or use terminal chat",
+    text: "Interactive tutor in the terminal (no website chat page yet). Requires GROQ_API_KEY in the environment.",
     command:
-      "{\n  \"session_id\": \"...\",\n  \"user_message\": \"...\",\n  \"groq_response\": \"...\",\n  \"language\": \"python\",\n  \"level\": \"beginner\",\n  \"created_at\": \"2026-06-06T12:00:00Z\"\n}",
+      "cd D:\\QuantumLogics\\PolyMentor\n$env:GROQ_API_KEY=\"your_key\"\npython src/inference/tutor_mode.py",
   },
   {
     icon: CheckCircle2,
-    title: "4. Validate the pipeline",
-    text: "Send test chats, confirm Groq responses arrive quickly, and verify documents appear in MongoDB.",
+    title: "4. Validate the chatbot",
+    text: "Send a test message and confirm Groq returns an answer. MongoDB storage lives in PolyCode (Node backend), not this Python API yet.",
     command:
-      "python -m py_compile src/inference/pipeline.py src/api/app.py\nnpm --prefix website run build",
+      "curl -X POST http://127.0.0.1:8000/chat `\n  -H \"Content-Type: application/json\" `\n  -d '{\"level\":\"beginner\",\"message\":\"Explain Python loops\"}'",
   },
 ];
 
@@ -105,24 +105,24 @@ const polycodeFlow = [
 
 const mlopsSteps = [
   {
-    title: "Schedule daily extraction",
+    title: "Export chats from PolyCode MongoDB",
     command:
-      "# Cron or Airflow DAG — runs every night\npython scripts/extract_training_data.py \\\n  --mongodb-uri $MONGODB_URI \\\n  --output data/processed/daily_train.json \\\n  --since yesterday",
+      "cd D:\\QuantumLogics\\PolyCode\\backend\nnpm run ml:export-training:dry\nnpm run ml:export-training -- --liked-only",
   },
   {
-    title: "Launch cloud GPU training",
+    title: "Preprocess local training data (optional)",
     command:
-      "# RunPod / Lambda / GCP / AWS\npython scripts/train_cloud.py \\\n  --data data/processed/daily_train.json \\\n  --base-model Qwen/Qwen2.5-Coder-7B-Instruct \\\n  --output models_saved/polycode-lora \\\n  --epochs 3",
+      "cd D:\\QuantumLogics\\PolyMentor\nbash scripts/preprocess.sh",
   },
   {
-    title: "Evaluate against Groq baseline",
+    title: "Fine-tune on GPU (Python 3.12 + CUDA)",
     command:
-      "python scripts/evaluate_model.py \\\n  --checkpoint models_saved/polycode-lora \\\n  --benchmark data/processed/eval_set.json \\\n  --compare-groq",
+      "cd D:\\QuantumLogics\\PolyMentor\nbash scripts/train.sh\n# Uses src/training/finetune_chatbot.py",
   },
   {
-    title: "Redeploy if quality improves",
+    title: "Evaluate & iterate",
     command:
-      "python scripts/deploy_model.py \\\n  --checkpoint models_saved/polycode-lora \\\n  --target hf://your-org/polycode-model \\\n  --promote-if-better-than-groq",
+      "bash scripts/evaluate.sh\n# Manual quality checks — compare answers vs Groq baseline",
   },
 ];
 
@@ -151,9 +151,9 @@ const mlopsCycle = [
 
 const deployPolycodeSteps = [
   {
-    title: "Deploy PolyCode frontend",
+    title: "Run PolyMentor guide site (this UI)",
     command:
-      "npm --prefix website run build\n# Host on Vercel, Netlify, or HF Spaces",
+      "cd D:\\QuantumLogics\\PolyMentor\\website\nnpm install\nnpm run dev\n# http://localhost:5173",
   },
   {
     title: "Configure production secrets",
@@ -161,14 +161,14 @@ const deployPolycodeSteps = [
       "GROQ_API_KEY=your_key\nGROQ_MODEL=llama-3.3-70b-versatile\nMONGODB_URI=mongodb+srv://user:pass@cluster/polycode",
   },
   {
-    title: "Run API with MongoDB Atlas",
+    title: "Run API for production",
     command:
-      "uvicorn src.api.app:app --host 0.0.0.0 --port 8000\n# Use MongoDB Atlas for managed cloud storage",
+      "cd D:\\QuantumLogics\\PolyMentor\nuvicorn src.api.app:app --host 0.0.0.0 --port 8000",
   },
   {
-    title: "Monitor chat volume",
+    title: "Monitor PolyCode chat data",
     command:
-      "db.conversations.countDocuments()\ndb.conversations.aggregate([{ $group: { _id: \"$language\", count: { $sum: 1 } } }])",
+      "cd D:\\QuantumLogics\\PolyCode\\backend\nnpm run ml:export-training:dry\n# Or MongoDB: db.prompts.countDocuments()",
   },
 ];
 
@@ -176,22 +176,22 @@ const deployModelSteps = [
   {
     title: "Upload checkpoint to HF Hub",
     command:
-      "hf auth login\nhf upload your-org/polycode-model models_saved/polycode-lora . --repo-type model",
+      "hf auth login\nhuggingface-cli upload your-org/polymentor-model models_saved/polymentor-chatbot-lora .",
   },
   {
-    title: "Serve inference endpoint",
+    title: "Serve local adapter (experimental)",
     command:
-      "# HF Inference Endpoint or custom GPU server\npython scripts/serve_model.py \\\n  --model your-org/polycode-model \\\n  --port 8080",
+      "# Groq remains default runtime.\n# After training: wire custom endpoint in PolyCode backend\n# ASSISTANT_PROVIDER=custom",
   },
   {
     title: "Gradual Groq → custom switch",
     command:
-      "# Route percentage of traffic to custom model\nPOLYCODE_INFERENCE=groq          # Phase 1: 100% Groq\nPOLYCODE_INFERENCE=hybrid:20       # Phase 2: 20% custom\nPOLYCODE_INFERENCE=custom          # Phase 3: 100% custom",
+      "# PolyCode backend .env:\nASSISTANT_PROVIDER=groq\n# later:\nASSISTANT_PROVIDER=custom\nCUSTOM_MODEL_BASE_URL=https://your-host/v1",
   },
   {
-    title: "Keep MLOps running",
+    title: "Schedule retraining",
     command:
-      "# Daily cron on cloud VM or CI pipeline\n0 2 * * * /opt/polycode/scripts/run_mlops_pipeline.sh",
+      "# Windows Task Scheduler or cron on Linux VM\n# Daily: npm run ml:export-training (PolyCode backend)",
   },
 ];
 
