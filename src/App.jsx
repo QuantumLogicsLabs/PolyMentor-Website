@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { NavLink, Route, Routes } from "react-router-dom";
 import {
-  Bot,
   BrainCircuit,
   CheckCircle2,
   Cloud,
@@ -12,22 +11,24 @@ import {
   GitBranch,
   GraduationCap,
   KeyRound,
-  Languages,
   Menu,
   MessageSquareCode,
   RefreshCw,
   Rocket,
   Server,
+  ShieldCheck,
   Sparkles,
   TerminalSquare,
   TrendingUp,
   UploadCloud,
-  Wrench,
   Zap,
 } from "lucide-react";
 
+const logoPath = "/logo.png";
+
 const navItems = [
   { to: "/", label: "Overview" },
+  { to: "/setup", label: "Setup" },
   { to: "/polycode", label: "PolyCode" },
   { to: "/mlops", label: "MLOps" },
   { to: "/deploy", label: "Deploy" },
@@ -35,32 +36,146 @@ const navItems = [
 ];
 
 const stats = [
-  { label: "Live chat", value: "Groq API" },
-  { label: "Data store", value: "MongoDB" },
-  { label: "Retrain", value: "Daily MLOps" },
-  { label: "Training", value: "Cloud GPUs" },
+  { label: "Frontend", value: "React learner app" },
+  { label: "Backend", value: "Express API" },
+  { label: "Mentor", value: "FastAPI service" },
+  { label: "Automation", value: "GitHub + Windows" },
 ];
 
-const missionCards = [
+const platformCards = [
   {
-    icon: MessageSquareCode,
-    title: "Ship fast with Groq",
-    text: "PolyCode answers coding questions instantly through the Groq API — lessons, bug fixes, refactors, and tests across many languages.",
+    icon: GraduationCap,
+    title: "Learner experience",
+    text: "PolyCode gives learners course routes, docs hubs, language pages, progress, profiles, and certificate access from one React app.",
   },
   {
-    icon: Database,
-    title: "Learn from every chat",
-    text: "Every user question and Groq response is stored in MongoDB, building a growing dataset of real programming conversations.",
+    icon: Server,
+    title: "Backend foundation",
+    text: "The Express backend handles auth, documents, chat, profile updates, follows, certificates, and integration points for the platform.",
   },
   {
     icon: BrainCircuit,
-    title: "Improve automatically",
-    text: "A dedicated ML model retrains daily on cloud GPUs via MLOps, then redeploys — getting stronger at programming with each cycle.",
+    title: "PolyMentor AI",
+    text: "PolyMentor runs separately as a FastAPI service with /health, /chat, /analyze, learning endpoints, and level-aware responses.",
   },
   {
-    icon: TrendingUp,
-    title: "Surpass Groq over time",
-    text: "The custom model is tuned on PolyCode's own data. As training data grows, it becomes more powerful than Groq for programming tasks.",
+    icon: ShieldCheck,
+    title: "Secret-safe guide",
+    text: "This website explains the system without publishing real tokens, database URLs, private keys, or account credentials.",
+  },
+];
+
+const platformFlow = [
+  "Learners use PolyCode for lessons, docs, profiles, assistant help, and certificates.",
+  "The backend protects auth, serves data, stores profile state, and forwards mentor requests.",
+  "PolyMentor answers through its own FastAPI API, so the AI service can be deployed and improved separately.",
+  "Automation checks the deployed mentor daily and can start the local laptop service on port 9999.",
+];
+
+const repositoryCards = [
+  {
+    icon: FileCode2,
+    title: "PolyCode Frontend",
+    url: "https://github.com/QuantumLogicsLabs/PolyCode-Frontend",
+    command: "gh repo clone QuantumLogicsLabs/PolyCode-Frontend",
+    text: "The user-facing React app for chat, learning screens, and the public PolyCode experience.",
+  },
+  {
+    icon: Server,
+    title: "PolyCode Backend",
+    url: "https://github.com/QuantumLogicsLabs/PolyCode-Backend",
+    command: "gh repo clone QuantumLogicsLabs/PolyCode-Backend",
+    text: "The API service that connects frontend requests to Groq, MongoDB, and application logic.",
+  },
+  {
+    icon: BrainCircuit,
+    title: "PolyMentor",
+    url: "https://github.com/QuantumLogicsLabs/PolyMentor.git",
+    command: "gh repo clone QuantumLogicsLabs/PolyMentor",
+    text: "The mentor engine, docs website, MongoDB prompt export, cleanup tooling, and model training pipeline.",
+  },
+];
+
+const setupProcedureSteps = [
+  {
+    title: "Clone all project repositories",
+    text: "Start from a clean workspace and clone the frontend, backend, and PolyMentor training/documentation repository.",
+    command:
+      "gh repo clone QuantumLogicsLabs/PolyCode-Frontend\n" +
+      "gh repo clone QuantumLogicsLabs/PolyCode-Backend\n" +
+      "gh repo clone QuantumLogicsLabs/PolyMentor",
+  },
+  {
+    title: "Configure backend environment",
+    text: "Set Groq and MongoDB credentials. The prompt dataset source is the MongoDB database polycode and collection prompts.",
+    command:
+      "cd PolyCode-Backend\n" +
+      "python -m pip install -e .\n" +
+      "python -m pip install -r requirements.txt\n" +
+      "GROQ_API_KEY=your_groq_key\n" +
+      "GROQ_MODEL=llama-3.3-70b-versatile\n" +
+      "MONGODB_URI=mongodb+srv://user:pass@cluster/?retryWrites=true&w=majority\n" +
+      "MONGODB_DB=polycode\n" +
+      "MONGODB_COLLECTION=prompts",
+  },
+  {
+    title: "Run the API locally",
+    text: "Start the FastAPI backend and verify the health/docs endpoints before connecting the frontend.",
+    command:
+      "uvicorn src.api.app:app --host 0.0.0.0 --port 8000\n" +
+      "# Open http://127.0.0.1:8000/docs\n" +
+      "# Deployed API example: https://poly-mentor-bm2s.vercel.app/",
+  },
+  {
+    title: "Run the frontend locally",
+    text: "Install frontend dependencies, point the frontend to the backend API URL, and start the local dev server.",
+    command:
+      "cd ../PolyCode-Frontend\n" +
+      "npm install\n" +
+      "VITE_API_URL=http://127.0.0.1:8000\n" +
+      "npm run dev",
+  },
+  {
+    title: "Export MongoDB prompts for training",
+    text: "Use PolyMentor to clean real conversation documents into the training JSON file.",
+    command:
+      "cd ../PolyMentor\n" +
+      "python -m pip install -e .\n" +
+      "python scripts/export_mongodb_prompts.py\n" +
+      "# Output: data/processed/mongodb_prompts.json",
+  },
+  {
+    title: "Retrain on a GPU machine",
+    text: "For a no-cost GPU experiment, use Kaggle Notebooks. Training should not run on a normal Vercel or GitHub Actions runner.",
+    command:
+      "# Recommended free path: Kaggle Notebook with GPU enabled\n" +
+      "# Upload data/processed/mongodb_prompts.json as a Kaggle dataset\n" +
+      "git clone https://github.com/QuantumLogicsLabs/PolyMentor.git\n" +
+      "cd PolyMentor\n" +
+      "python -m pip install -r requirements.txt\n" +
+      "python -m pip install -r requirements-train.txt\n" +
+      "export FETCH_MONGODB_PROMPTS=0\n" +
+      "bash scripts/train.sh",
+  },
+  {
+    title: "Deploy the API and website",
+    text: "Deploy FastAPI from the backend/root service and deploy the React app from the frontend or website root directory.",
+    command:
+      "# FastAPI deploy uses:\n" +
+      "[tool.vercel]\n" +
+      "entrypoint = \"src.api.app:app\"\n\n" +
+      "# React deploy:\n" +
+      "npm run build\n" +
+      "# Set Vercel Root Directory to the frontend app folder.",
+  },
+  {
+    title: "Keep automation running",
+    text: "GitHub Actions exports clean prompt data and reports large local folders. Scheduled workflows use 5-minute cron intervals.",
+    command:
+      "# Required GitHub secret:\n" +
+      "MONGODB_URI=mongodb+srv://user:pass@cluster/?retryWrites=true&w=majority\n\n" +
+      "# Workflow:\n" +
+      ".github/workflows/mongodb-prompts-pipeline.yml",
   },
 ];
 
@@ -68,9 +183,9 @@ const polycodeSteps = [
   {
     icon: KeyRound,
     title: "1. Configure environment",
-    text: "Install the FastAPI backend + Groq SDK. Copy .env.example → .env and add your Groq API key. Use requirements-api.txt for chat only, or requirements.txt for the full ML stack.",
+    text: "Install the FastAPI backend + Groq SDK. Copy .env.example to .env and add your Groq API key.",
     command:
-      "cd D:\\QuantumLogics\\PolyMentor\npython -m pip install -r requirements-api.txt\n# Or full stack: python -m pip install -r requirements.txt\n$env:GROQ_API_KEY=\"your_key\"",
+      "cd D:\\QuantumLogics\\PolyMentor\npython -m pip install -r requirements-api.txt\n$env:GROQ_API_KEY=\"your_key\"",
   },
   {
     icon: Server,
@@ -81,29 +196,43 @@ const polycodeSteps = [
   },
   {
     icon: TerminalSquare,
-    title: "3. Or use terminal chat",
-    text: "Interactive tutor in the terminal (no website chat page yet). Requires GROQ_API_KEY in the environment.",
+    title: "3. Connect PolyCode frontend",
+    text: "Point the React app at the Express backend. Chat and assistant traffic flows through MongoDB-backed prompts.",
     command:
-      "cd D:\\QuantumLogics\\PolyMentor\n$env:GROQ_API_KEY=\"your_key\"\npython src/inference/tutor_mode.py",
+      "cd D:\\QuantumLogics\\PolyCode\\frontend\nnpm install\nnpm start",
   },
   {
     icon: CheckCircle2,
-    title: "4. Validate the chatbot",
-    text: "Send a test message and confirm Groq returns an answer. MongoDB storage lives in PolyCode (Node backend), not this Python API yet.",
+    title: "4. Validate the assistant",
+    text: "Send a test message from PolyCode and confirm Groq returns an answer. Conversations are stored in MongoDB for training.",
     command:
       "curl -X POST http://127.0.0.1:8000/chat `\n  -H \"Content-Type: application/json\" `\n  -d '{\"level\":\"beginner\",\"message\":\"Explain Python loops\"}'",
   },
 ];
 
-const polycodeFlow = [
-  "User asks a coding question or pastes code on PolyCode.",
-  "PolyCode sends the request to Groq with tutor instructions and context.",
-  "Groq returns a fast, high-quality programming answer.",
-  "The full conversation pair is saved to MongoDB for future training.",
-  "Users get instant help; the dataset grows with every session.",
+const automationSteps = [
+  {
+    title: "GitHub Actions",
+    command:
+      ".github/workflows/polymentor-daily.yml\n\nRuns daily:\n  GET /health\n  POST /chat",
+  },
+  {
+    title: "Local laptop startup",
+    command:
+      "scripts/start-polymentor-local.ps1\n\nStarts Uvicorn locally\nUses the selected port\nAvoids duplicate servers",
+  },
+  {
+    title: "Windows scheduled task",
+    command:
+      "scripts/register-polymentor-daily-task.ps1\n\nExample:\n  -StartTime 09:00\n  -Port 9999",
+  },
+  {
+    title: "Safe local files",
+    command: ".gitignore\n\nIgnores:\n  .venv/\n  logs/",
+  },
 ];
 
-const mlopsSteps = [
+const trainingPipelineSteps = [
   {
     title: "Export chats from PolyCode MongoDB",
     command:
@@ -111,8 +240,7 @@ const mlopsSteps = [
   },
   {
     title: "Preprocess local training data (optional)",
-    command:
-      "cd D:\\QuantumLogics\\PolyMentor\nbash scripts/preprocess.sh",
+    command: "cd D:\\QuantumLogics\\PolyMentor\nbash scripts/preprocess.sh",
   },
   {
     title: "Fine-tune on GPU (Python 3.12 + CUDA)",
@@ -120,9 +248,102 @@ const mlopsSteps = [
       "cd D:\\QuantumLogics\\PolyMentor\nbash scripts/train.sh\n# Uses src/training/finetune_chatbot.py",
   },
   {
-    title: "Evaluate & iterate",
+    title: "Evaluate and iterate",
     command:
       "bash scripts/evaluate.sh\n# Manual quality checks — compare answers vs Groq baseline",
+  },
+];
+
+const kaggleIntegrationSteps = [
+  {
+    title: "Use Kaggle only for free experiments",
+    text: "Kaggle Notebooks are useful for testing LoRA training without paying, but they are not reliable for a fully self-working production pipeline because GPU sessions and schedules are limited.",
+    command:
+      "# Good for: manual experiments and proof of concept\n" +
+      "# Not ideal for: always-on automatic retraining\n" +
+      "# Production automation needs a scheduled GPU worker.",
+  },
+  {
+    title: "Automate prompt export",
+    text: "GitHub Actions pulls new conversations from MongoDB, cleans them, and uploads the training JSON as an artifact.",
+    command:
+      "# .github/workflows/mongodb-prompts-pipeline.yml\n" +
+      "python scripts/export_mongodb_prompts.py\n" +
+      "python scripts/maintenance_cleanup.py --min-mb 50\n" +
+      "# Artifact: data/processed/mongodb_prompts.json",
+  },
+  {
+    title: "Start GPU training automatically",
+    text: "A scheduled GPU machine downloads the latest prompt dataset, installs dependencies, and runs the training script without manual clicks.",
+    command:
+      "git pull origin main\n" +
+      "python -m pip install -e .\n" +
+      "python -m pip install -r requirements.txt -r requirements-train.txt\n" +
+      "python scripts/export_mongodb_prompts.py\n" +
+      "export FETCH_MONGODB_PROMPTS=0\n" +
+      "bash scripts/train.sh",
+  },
+  {
+    title: "Evaluate and promote only if better",
+    text: "The new adapter should be tested before it becomes the production model. If it passes, upload the model and switch traffic gradually.",
+    command:
+      "# Training output:\n" +
+      "models_saved/polymentor-chatbot-lora\n\n" +
+      "# Then evaluate, upload, and promote:\n" +
+      "python scripts/evaluate.sh\n" +
+      "# Upload adapter to model storage only if quality improves.",
+  },
+];
+
+const selfWorkingTrainingSteps = [
+  {
+    title: "1. Store every chat in MongoDB",
+    text: "The backend saves each user and assistant message in MongoDB so real conversations become future training data.",
+    command:
+      "MONGODB_DB=polycode\n" +
+      "MONGODB_COLLECTION=prompts\n" +
+      "# Documents contain userMessage, assistantMessage, liked, context, timestamps",
+  },
+  {
+    title: "2. Schedule data export",
+    text: "GitHub Actions runs the exporter on a schedule, cleans useless fields, and produces a training JSON file.",
+    command:
+      "# GitHub secret required:\n" +
+      "MONGODB_URI=mongodb+srv://user:pass@cluster/?retryWrites=true&w=majority\n\n" +
+      "# Workflow output:\n" +
+      "data/processed/mongodb_prompts.json",
+  },
+  {
+    title: "3. Run a GPU worker",
+    text: "A cloud GPU server, RunPod pod, Vast.ai instance, or any CUDA machine pulls the latest code and dataset on a cron schedule.",
+    command:
+      "# Example cron on GPU machine, every night at 2 AM:\n" +
+      "0 2 * * * cd /opt/PolyMentor && bash scripts/auto_train.sh",
+  },
+  {
+    title: "4. Train the LoRA adapter",
+    text: "The GPU worker runs the existing training script and saves a fresh adapter checkpoint.",
+    command:
+      "python scripts/export_mongodb_prompts.py\n" +
+      "export FETCH_MONGODB_PROMPTS=0\n" +
+      "bash scripts/train.sh\n" +
+      "# Output: models_saved/polymentor-chatbot-lora",
+  },
+  {
+    title: "5. Evaluate before deployment",
+    text: "The pipeline should compare the new adapter against the current production behavior before switching users to it.",
+    command:
+      "bash scripts/evaluate.sh\n" +
+      "# Promote only when eval quality improves.",
+  },
+  {
+    title: "6. Upload and serve the better model",
+    text: "If evaluation passes, upload the adapter to model storage or a GPU inference endpoint. Production can keep Groq as fallback.",
+    command:
+      "# Example targets:\n" +
+      "# Hugging Face Hub, S3/R2, RunPod volume, or a custom GPU API\n" +
+      "POLYCODE_INFERENCE=hybrid\n" +
+      "GROQ_FALLBACK_MODEL=llama-3.1-8b-instant",
   },
 ];
 
@@ -146,6 +367,29 @@ const mlopsCycle = [
     icon: Rocket,
     title: "Deploy",
     text: "Push the improved checkpoint to inference and optionally route traffic from Groq.",
+  },
+];
+
+const visionPrinciples = [
+  {
+    icon: MessageSquareCode,
+    title: "Teach with context",
+    text: "SENODROOM connects lessons, code help, progress, and identity instead of treating AI chat as a separate toy.",
+  },
+  {
+    icon: CheckCircle2,
+    title: "Turn learning into proof",
+    text: "Profiles, follows, completed-course cards, and certificate routes make progress visible and shareable.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Automate the routine",
+    text: "Daily deployed checks and scheduled local startup reduce manual work, so the system stays ready with less effort.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Improve in layers",
+    text: "The frontend, backend, and mentor service are separated, which lets each part grow without breaking the whole platform.",
   },
 ];
 
@@ -184,7 +428,7 @@ const deployModelSteps = [
       "# Groq remains default runtime.\n# After training: wire custom endpoint in PolyCode backend\n# ASSISTANT_PROVIDER=custom",
   },
   {
-    title: "Gradual Groq → custom switch",
+    title: "Gradual Groq to custom switch",
     command:
       "# PolyCode backend .env:\nASSISTANT_PROVIDER=groq\n# later:\nASSISTANT_PROVIDER=custom\nCUSTOM_MODEL_BASE_URL=https://your-host/v1",
   },
@@ -257,7 +501,7 @@ function Layout({ children }) {
       <header className="site-header">
         <NavLink to="/" className="brand" aria-label="PolyMentor home" onClick={closeMenu}>
           <span className="brand-mark">
-            <Bot size={22} aria-hidden="true" />
+            <img src={logoPath} alt="" aria-hidden="true" />
           </span>
           <span>PolyMentor</span>
         </NavLink>
@@ -301,15 +545,15 @@ function Layout({ children }) {
 
 function HeroVisual() {
   const nodes = [
-    { icon: MessageSquareCode, label: "PolyCode", sub: "User chat" },
-    { icon: Zap, label: "Groq API", sub: "Live answers" },
-    { icon: Database, label: "MongoDB", sub: "Store chats" },
-    { icon: Cpu, label: "Cloud GPU", sub: "Daily train" },
-    { icon: BrainCircuit, label: "Custom ML", sub: "Beat Groq" },
+    { icon: GraduationCap, label: "PolyCode", sub: "Learn" },
+    { icon: Server, label: "Backend", sub: "Connect" },
+    { icon: BrainCircuit, label: "PolyMentor", sub: "Guide" },
+    { icon: RefreshCw, label: "Automation", sub: "Run" },
+    { icon: Sparkles, label: "SENODROOM", sub: "Invent" },
   ];
 
   return (
-    <div className="hero-visual" aria-label="PolyMentor architecture flywheel">
+    <div className="hero-visual" aria-label="PolyMentor platform flow">
       {nodes.map((node, index) => {
         const Icon = node.icon;
         return (
@@ -321,7 +565,7 @@ function HeroVisual() {
             <span>{node.sub}</span>
             {index < nodes.length - 1 && (
               <span className="hero-visual-arrow" aria-hidden="true">
-                →
+                -&gt;
               </span>
             )}
           </div>
@@ -331,40 +575,36 @@ function HeroVisual() {
   );
 }
 
-function Hero() {
-  return (
-    <section className="hero">
-      <div className="hero-copy">
-        <p className="eyebrow">
-          <Sparkles size={16} aria-hidden="true" />
-          Groq today. Custom model tomorrow.
-        </p>
-        <h1>PolyMentor</h1>
-        <p className="hero-text">
-          PolyCode powers coding help through Groq and stores every conversation in
-          MongoDB. A custom ML model retrains daily on cloud GPUs via MLOps — and
-          eventually surpasses Groq for programming.
-        </p>
-        <div className="hero-actions">
-          <NavLink to="/polycode" className="primary-action">
-            <GraduationCap size={18} aria-hidden="true" />
-            Build PolyCode
-          </NavLink>
-          <NavLink to="/vision" className="secondary-action">
-            <TrendingUp size={18} aria-hidden="true" />
-            Full vision
-          </NavLink>
-        </div>
-      </div>
-      <HeroVisual />
-    </section>
-  );
-}
-
 function OverviewPage() {
   return (
     <Layout>
-      <Hero />
+      <section className="hero">
+        <div className="hero-copy">
+          <img className="hero-logo" src={logoPath} alt="PolyMentor logo" />
+          <p className="eyebrow">
+            <Sparkles size={16} aria-hidden="true" />
+            PolyCode, PolyMentor, SENODROOM
+          </p>
+          <h1>PolyMentor</h1>
+          <p className="hero-text">
+            This guide focuses on what the project is actually doing: a React learning
+            platform, an Express backend, a separate FastAPI mentor service, daily
+            GitHub checks, and a Windows script for local startup.
+          </p>
+          <div className="hero-actions">
+            <NavLink to="/setup" className="primary-action">
+              <GraduationCap size={18} aria-hidden="true" />
+              Get started
+            </NavLink>
+            <NavLink to="/vision" className="secondary-action">
+              <TrendingUp size={18} aria-hidden="true" />
+              Full vision
+            </NavLink>
+          </div>
+        </div>
+        <HeroVisual />
+      </section>
+
       <section className="section signal-grid">
         {stats.map((stat) => (
           <article className="signal-tile metric-tile" key={stat.label}>
@@ -373,41 +613,81 @@ function OverviewPage() {
           </article>
         ))}
       </section>
-      <section className="section purpose-grid four-col">
-        {missionCards.map((card) => {
-          const Icon = card.icon;
+
+      <section className="section command-band">
+        <div>
+          <p className="eyebrow">
+            <TerminalSquare size={16} aria-hidden="true" />
+            Real architecture
+          </p>
+          <h2>A practical learning system, not a fake AI pitch.</h2>
+          <p className="band-text">
+            The strongest part is the split: PolyCode owns the learner experience, the
+            backend owns platform behavior, PolyMentor owns mentor intelligence, and
+            automation keeps the service easy to check and run.
+          </p>
+        </div>
+        <pre>{`PolyCode React app
+  -> Express backend
+  -> PolyMentor FastAPI service
+
+GitHub Actions
+  -> daily deployed API check
+
+Windows Task Scheduler
+  -> local laptop startup on port 9999`}</pre>
+      </section>
+    </Layout>
+  );
+}
+
+function SetupPage() {
+  return (
+    <Layout>
+      <section className="page-heading compact">
+        <p className="eyebrow">
+          <GitBranch size={16} aria-hidden="true" />
+          Complete project setup
+        </p>
+        <h1>Clone the repos, run PolyCode, collect prompts, and train PolyMentor.</h1>
+        <p className="page-subtext">
+          The deployed backend is available at{" "}
+          <a href="https://poly-mentor-bm2s.vercel.app/" target="_blank" rel="noreferrer">
+            poly-mentor-bm2s.vercel.app
+          </a>
+          . Use this guide to set up the frontend, backend, and PolyMentor training
+          workflow from the GitHub repositories.
+        </p>
+      </section>
+
+      <section className="section repo-grid">
+        {repositoryCards.map((repo) => {
+          const Icon = repo.icon;
           return (
-            <article className="mission-panel" key={card.title}>
-              <Icon size={26} aria-hidden="true" />
-              <h2>{card.title}</h2>
-              <p>{card.text}</p>
+            <article className="repo-panel" key={repo.title}>
+              <Icon size={24} aria-hidden="true" />
+              <h2>{repo.title}</h2>
+              <p>{repo.text}</p>
+              <code>{repo.command}</code>
+              <a href={repo.url} target="_blank" rel="noreferrer">
+                Open repository
+              </a>
             </article>
           );
         })}
       </section>
-      <section className="section command-band">
-        <div>
-          <p className="eyebrow">
-            <Cpu size={16} aria-hidden="true" />
-            Architecture
-          </p>
-          <h2>Groq serves users. MongoDB feeds the model. MLOps closes the loop.</h2>
-          <p className="band-text">
-            PolyCode is the product users interact with. Groq provides fast inference
-            today. MongoDB accumulates training data from real conversations. MLOps
-            retrains and redeploys the custom model every day on cloud GPUs until it
-            outperforms Groq on programming tasks.
-          </p>
-        </div>
-        <pre>{`PolyCode (React) → FastAPI → Groq API → response
-                              ↓
-                         MongoDB (chat logs)
-                              ↓
-              Daily MLOps: extract → train → eval → deploy
-                              ↓
-                    Custom model (Cloud GPU inference)
-                              ↓
-              Eventually replace Groq for programming`}</pre>
+
+      <section className="section start-list">
+        {setupProcedureSteps.map((step, index) => (
+          <article className="start-row" key={step.title}>
+            <span className="row-index">{index + 1}</span>
+            <div>
+              <h2>{step.title}</h2>
+              <p>{step.text}</p>
+              <pre>{step.command}</pre>
+            </div>
+          </article>
+        ))}
       </section>
     </Layout>
   );
@@ -419,14 +699,29 @@ function PolyCodePage() {
       <section className="page-heading compact">
         <p className="eyebrow">
           <GitBranch size={16} aria-hidden="true" />
-          PolyCode setup
+          What we built
         </p>
-        <h1>Build the chat website with Groq API and MongoDB storage.</h1>
+        <h1>PolyCode is not a simple course site. It is a full learning platform.</h1>
         <p className="page-subtext">
-          PolyCode is the user-facing coding tutor. Groq handles live chat. MongoDB
-          stores every conversation so the ML model can learn from real usage.
+          The platform combines structured learning, real accounts, social profiles,
+          certificate proof, follow relationships, a coding assistant, and an AI mentor
+          service. That is why it feels like a product, not a demo.
         </p>
       </section>
+
+      <section className="section purpose-grid four-col">
+        {platformCards.map((card) => {
+          const Icon = card.icon;
+          return (
+            <article className="mission-panel" key={card.title}>
+              <Icon size={26} aria-hidden="true" />
+              <h2>{card.title}</h2>
+              <p>{card.text}</p>
+            </article>
+          );
+        })}
+      </section>
+
       <section className="section start-list">
         {polycodeSteps.map((step) => {
           const Icon = step.icon;
@@ -442,8 +737,9 @@ function PolyCodePage() {
           );
         })}
       </section>
+
       <section className="section architecture-band">
-        {polycodeFlow.map((item, index) => (
+        {platformFlow.map((item, index) => (
           <article className="architecture-row" key={item}>
             <span>{index + 1}</span>
             <p>{item}</p>
@@ -460,14 +756,15 @@ function MlopsPage() {
       <section className="page-heading">
         <p className="eyebrow">
           <RefreshCw size={16} aria-hidden="true" />
-          Daily MLOps pipeline
+          MLOps and automation
         </p>
-        <h1>Extract MongoDB chats, retrain on cloud GPUs, redeploy automatically.</h1>
+        <h1>Extract MongoDB chats, retrain on cloud GPUs, and keep services running.</h1>
         <p className="page-subtext">
-          The ML model does not serve users directly at first. It pulls Groq conversation
-          data from MongoDB, retrains every day, and redeploys when quality improves.
+          GitHub Actions handles cloud checks and prompt export. Windows scripts start
+          PolyMentor locally. A GPU worker retrains the model when quality improves.
         </p>
       </section>
+
       <section className="section cycle-grid">
         {mlopsCycle.map((step) => {
           const Icon = step.icon;
@@ -480,8 +777,9 @@ function MlopsPage() {
           );
         })}
       </section>
+
       <section className="section lab-grid">
-        {mlopsSteps.map((step, index) => (
+        {trainingPipelineSteps.map((step, index) => (
           <article className="lesson-panel guide-panel" key={step.title}>
             <span className="row-index">{index + 1}</span>
             <h2>{step.title}</h2>
@@ -489,13 +787,67 @@ function MlopsPage() {
           </article>
         ))}
       </section>
+
+      <section className="section lab-grid">
+        {automationSteps.map((step, index) => (
+          <article className="lesson-panel guide-panel" key={step.title}>
+            <span className="row-index">{index + 1}</span>
+            <h2>{step.title}</h2>
+            <pre>{step.command}</pre>
+          </article>
+        ))}
+      </section>
+
+      <section className="section command-band kaggle-band">
+        <div>
+          <p className="eyebrow">
+            <Cloud size={16} aria-hidden="true" />
+            Self-working training
+          </p>
+          <h2>For automatic deployment and retraining, use a scheduled GPU worker.</h2>
+          <p className="band-text">
+            A no-click production model needs three automated parts: MongoDB prompt export,
+            GPU training, and evaluation-based deployment. Kaggle can help test the
+            notebook manually, but a reliable self-working system needs a GPU machine
+            that can run cron or scheduled jobs.
+          </p>
+        </div>
+        <pre>{`MongoDB polycode/prompts
+  -> GitHub Actions exports cleaned prompts
+  -> GPU worker pulls latest dataset
+  -> LoRA training creates a new adapter
+  -> evaluation checks quality
+  -> upload/promote only if better
+  -> Groq remains fallback for safety`}</pre>
+      </section>
+
+      <section className="section lab-grid">
+        {selfWorkingTrainingSteps.map((step) => (
+          <article className="lesson-panel guide-panel" key={step.title}>
+            <h2>{step.title}</h2>
+            <p>{step.text}</p>
+            <pre>{step.command}</pre>
+          </article>
+        ))}
+      </section>
+
+      <section className="section lab-grid">
+        {kaggleIntegrationSteps.map((step, index) => (
+          <article className="lesson-panel guide-panel" key={step.title}>
+            <span className="row-index">{index + 1}</span>
+            <h2>{step.title}</h2>
+            <p>{step.text}</p>
+            <pre>{step.command}</pre>
+          </article>
+        ))}
+      </section>
+
       <section className="section note-band">
         <CheckCircle2 size={24} aria-hidden="true" />
         <p>
-          Use cloud GPU providers like RunPod, Lambda Labs, GCP Vertex AI, or AWS
-          SageMaker for training. Schedule the pipeline with cron, GitHub Actions, or
-          Airflow. Groq stays the live backend until the custom model beats it on eval
-          benchmarks.
+          GitHub Actions does not run services on a personal laptop unless you install a
+          self-hosted runner. For this project, Windows Task Scheduler is simpler and
+          safer for local PolyMentor startup.
         </p>
       </section>
     </Layout>
@@ -562,10 +914,11 @@ function VisionPage() {
         </p>
         <h1>From Groq-powered chatbot to the best programming model.</h1>
         <p className="page-subtext">
-          PolyMentor covers the full stack — API integration, data engineering,
-          machine learning, MLOps, cloud GPUs, and deployment — in one cohesive project.
+          PolyMentor covers the full stack — API integration, data engineering, machine
+          learning, MLOps, cloud GPUs, and deployment — in one cohesive project.
         </p>
       </section>
+
       <section className="section roadmap-list">
         {visionPhases.map((phase) => {
           const Icon = phase.icon;
@@ -580,6 +933,22 @@ function VisionPage() {
           );
         })}
       </section>
+
+      <section className="section roadmap-list">
+        {visionPrinciples.map((principle) => {
+          const Icon = principle.icon;
+          return (
+            <article className="roadmap-item" key={principle.title}>
+              <Icon size={22} aria-hidden="true" />
+              <div>
+                <h2>{principle.title}</h2>
+                <p>{principle.text}</p>
+              </div>
+            </article>
+          );
+        })}
+      </section>
+
       <section className="section language-grid">
         {languages.map((language) => (
           <article className="signal-tile language-tile" key={language}>
@@ -588,6 +957,7 @@ function VisionPage() {
           </article>
         ))}
       </section>
+
       <section className="section concepts-band">
         <div className="section-label">
           <Code2 size={18} aria-hidden="true" />
@@ -610,6 +980,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<OverviewPage />} />
+      <Route path="/setup" element={<SetupPage />} />
       <Route path="/polycode" element={<PolyCodePage />} />
       <Route path="/mlops" element={<MlopsPage />} />
       <Route path="/deploy" element={<DeployPage />} />

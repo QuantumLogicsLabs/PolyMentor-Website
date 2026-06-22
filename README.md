@@ -6,7 +6,7 @@ React guide site for the PolyMentor project — PolyCode (Groq + MongoDB) with d
 
 - `/` — Project overview and architecture flywheel
 - `/polycode` — Build PolyCode with Groq API and MongoDB storage
-- `/mlops` — Daily extract → train → evaluate → deploy pipeline
+- `/mlops` — Self-working extract → train → evaluate → deploy pipeline, plus Kaggle free GPU experiment notes
 - `/deploy` — Production deployment for PolyCode and custom model inference
 - `/vision` — Long-term roadmap and concepts covered
 
