@@ -113,7 +113,7 @@ const setupProcedureSteps = [
       "python -m pip install -e .\n" +
       "python -m pip install -r requirements.txt\n" +
       "GROQ_API_KEY=your_groq_key\n" +
-      "GROQ_MODEL=llama-3.3-70b-versatile\n" +
+      "GROQ_MODEL=openai/gpt-oss-120b\n" +
       "MONGODB_URI=mongodb+srv://user:pass@cluster/?retryWrites=true&w=majority\n" +
       "MONGODB_DB=polycode\n" +
       "MONGODB_COLLECTION=prompts",
@@ -343,7 +343,7 @@ const selfWorkingTrainingSteps = [
       "# Example targets:\n" +
       "# Hugging Face Hub, S3/R2, RunPod volume, or a custom GPU API\n" +
       "POLYCODE_INFERENCE=hybrid\n" +
-      "GROQ_FALLBACK_MODEL=llama-3.1-8b-instant",
+      "GROQ_FALLBACK_MODEL=openai/gpt-oss-20b",
   },
 ];
 
@@ -402,7 +402,7 @@ const deployPolycodeSteps = [
   {
     title: "Configure production secrets",
     command:
-      "GROQ_API_KEY=your_key\nGROQ_MODEL=llama-3.3-70b-versatile\nMONGODB_URI=mongodb+srv://user:pass@cluster/polycode",
+      "GROQ_API_KEY=your_key\nGROQ_MODEL=openai/gpt-oss-120b\nMONGODB_URI=mongodb+srv://user:pass@cluster/polycode",
   },
   {
     title: "Run API for production",
